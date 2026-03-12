@@ -1,0 +1,1773 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>WebDev Mastery — HTML · CSS · JS · React</title>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet"/>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#07090f;--surface:#0d1117;--card:#111827;--border:#1f2937;
+  --html:#f97316;--css:#3b82f6;--js:#eab308;--react:#06b6d4;
+  --green:#22c55e;--red:#ef4444;--purple:#a855f7;
+  --text:#f1f5f9;--muted:#64748b;--dim:#1e293b;
+  --mono:'IBM Plex Mono',monospace;--sans:'Outfit',sans-serif;
+  --accent:var(--html);
+}
+html,body{height:100%;background:var(--bg);color:var(--text);font-family:var(--sans);overflow:hidden}
+#app{display:flex;flex-direction:column;height:100vh}
+::-webkit-scrollbar{width:4px;height:4px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:#1f2937;border-radius:4px}
+button{cursor:pointer;font-family:var(--sans)}
+input,textarea,select{font-family:var(--sans)}
+
+/* TOPBAR */
+#topbar{
+  background:var(--surface);border-bottom:1px solid var(--border);
+  padding:0 16px;display:flex;align-items:center;gap:0;flex-shrink:0;height:52px;
+}
+.track-tab{
+  display:flex;align-items:center;gap:7px;padding:0 18px;height:52px;
+  border:none;background:transparent;color:var(--muted);font-size:13px;
+  font-weight:600;cursor:pointer;border-bottom:3px solid transparent;
+  transition:all .2s;white-space:nowrap;font-family:var(--sans);
+}
+.track-tab:hover{color:var(--text)}
+.track-tab.active{color:var(--text);border-bottom-color:var(--accent)}
+.track-tab .dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+#topbar-right{margin-left:auto;display:flex;align-items:center;gap:12px}
+.progress-pill{
+  background:var(--card);border:1px solid var(--border);border-radius:99px;
+  padding:4px 12px;font-size:11px;color:var(--muted);display:flex;align-items:center;gap:8px;
+}
+.progress-bar{width:60px;height:4px;background:var(--border);border-radius:99px;overflow:hidden}
+.progress-fill{height:100%;border-radius:99px;transition:width .4s;background:var(--accent)}
+
+/* MAIN LAYOUT */
+#main{display:flex;flex:1;overflow:hidden}
+
+/* SIDEBAR — lesson list */
+#sidebar{
+  width:200px;background:var(--surface);border-right:1px solid var(--border);
+  overflow-y:auto;flex-shrink:0;
+}
+.lesson-btn{
+  width:100%;background:transparent;border:none;border-left:3px solid transparent;
+  border-right:none;border-top:none;border-bottom:1px solid var(--border);
+  padding:10px 12px;text-align:left;cursor:pointer;
+  display:flex;align-items:center;gap:9px;transition:all .15s;
+}
+.lesson-btn:hover{background:var(--card)}
+.lesson-btn.active{background:var(--card);border-left-color:var(--accent)}
+.lesson-btn .l-num{font-size:10px;color:var(--muted);flex-shrink:0;width:18px}
+.lesson-btn .l-title{font-size:11px;color:var(--muted);font-weight:500;line-height:1.3}
+.lesson-btn.active .l-title{color:var(--text);font-weight:700}
+.lesson-btn .l-done{font-size:11px;flex-shrink:0}
+
+/* CENTER — lesson content */
+#center{flex:1;display:flex;flex-direction:column;overflow:hidden;min-width:0}
+
+/* lesson header */
+#lesson-header{
+  background:var(--surface);border-bottom:1px solid var(--border);
+  padding:13px 18px;flex-shrink:0;
+}
+#lesson-title{font-size:17px;font-weight:800;color:var(--text);margin-bottom:4px}
+#lesson-concept{
+  background:var(--bg);border-left:3px solid var(--accent);border-radius:0 6px 6px 0;
+  padding:7px 12px;font-size:12px;color:#94a3b8;
+}
+#lesson-concept b{color:var(--accent)}
+
+/* tabs */
+#tabs{
+  display:flex;background:var(--surface);border-bottom:1px solid var(--border);flex-shrink:0;
+}
+.tab-btn{
+  background:transparent;border:none;border-bottom:2px solid transparent;
+  padding:9px 16px;color:var(--muted);font-size:12px;font-weight:600;cursor:pointer;
+  font-family:var(--sans);transition:all .15s;
+}
+.tab-btn.active{color:var(--text);background:var(--bg);border-bottom-color:var(--accent)}
+
+/* content area */
+#content{flex:1;overflow-y:auto;padding:18px}
+
+/* code block */
+.code-block{
+  background:#050810;border:1px solid var(--border);border-radius:10px;
+  padding:16px 18px;font-family:var(--mono);font-size:12.5px;line-height:1.8;
+  color:#cbd5e1;white-space:pre-wrap;word-break:break-word;margin-bottom:12px;
+}
+.code-block .cm{color:#7dd3fc} /* keyword */
+.code-block .cv{color:#86efac} /* value/string */
+.code-block .cc{color:#475569;font-style:italic} /* comment */
+.code-block .ct{color:#fda4af} /* tag */
+.code-block .cp{color:#c4b5fd} /* property */
+.code-block .cf{color:#fbbf24} /* function */
+
+/* theory sections */
+.section-title{font-size:12px;font-weight:700;color:var(--accent);text-transform:uppercase;letter-spacing:.08em;margin:18px 0 8px}
+.section-title:first-child{margin-top:0}
+.theory-text{font-size:13px;color:#94a3b8;line-height:1.7;margin-bottom:10px}
+
+/* demo box */
+.demo-box{
+  background:var(--card);border:1px solid var(--border);border-radius:10px;overflow:hidden;
+}
+.demo-header{
+  background:var(--bg);padding:8px 14px;border-bottom:1px solid var(--border);
+  font-size:10px;color:var(--muted);display:flex;align-items:center;gap:6px;
+}
+.demo-dot{width:8px;height:8px;border-radius:50%}
+.demo-body{padding:16px}
+
+/* RIGHT — sidebox */
+#sidebox{
+  width:240px;background:var(--surface);border-left:1px solid var(--border);
+  overflow-y:auto;flex-shrink:0;display:flex;flex-direction:column;
+}
+#sidebox-header{
+  padding:12px 14px;border-bottom:1px solid var(--border);font-size:11px;
+  font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;
+  flex-shrink:0;
+}
+.tip-card{
+  margin:10px;background:var(--card);border:1px solid var(--border);
+  border-radius:8px;overflow:hidden;
+}
+.tip-card-head{
+  padding:8px 12px;font-size:10px;font-weight:700;display:flex;align-items:center;gap:6px;
+  text-transform:uppercase;letter-spacing:.06em;border-bottom:1px solid var(--border);
+}
+.tip-card-body{padding:10px 12px;font-size:11.5px;color:#94a3b8;line-height:1.65}
+.tip-card-body code{
+  font-family:var(--mono);background:#050810;padding:1px 5px;border-radius:3px;
+  font-size:10.5px;color:#7dd3fc;
+}
+.tip-tag{
+  display:inline-block;padding:1px 7px;border-radius:99px;font-size:10px;
+  font-weight:700;margin:2px 2px 0 0;
+}
+.link-tip{
+  margin:6px 12px;padding:8px 10px;background:var(--dim);border-radius:6px;
+  font-size:11px;color:#64748b;border-left:2px solid var(--accent);cursor:pointer;
+  transition:all .15s;
+}
+.link-tip:hover{color:var(--text);background:var(--card)}
+.link-tip b{color:var(--accent)}
+
+/* DEMO interactive elements */
+.d-btn{
+  background:var(--accent);color:#fff;border:none;border-radius:7px;
+  padding:8px 18px;font-weight:700;font-size:13px;cursor:pointer;font-family:var(--sans);
+  transition:opacity .15s;
+}
+.d-btn:hover{opacity:.85}
+.d-btn.secondary{background:var(--dim);color:#94a3b8}
+.d-input{
+  background:#050810;border:1px solid var(--border);border-radius:7px;
+  padding:8px 12px;color:var(--text);font-size:13px;width:100%;margin-bottom:8px;outline:none;
+  font-family:var(--sans);
+}
+.d-input:focus{border-color:var(--accent)}
+
+/* progress dots */
+#pdots{display:flex;gap:4px;align-items:center}
+.pdot{width:6px;height:6px;border-radius:50%;background:var(--border);cursor:pointer;transition:all .2s}
+.pdot.cur{background:var(--accent);width:18px;border-radius:4px}
+.pdot.done{background:var(--green)}
+
+/* footer */
+#footer{
+  background:var(--surface);border-top:1px solid var(--border);padding:10px 18px;
+  display:flex;justify-content:space-between;align-items:center;flex-shrink:0;
+}
+.f-btn{
+  background:var(--dim);color:#94a3b8;border:none;border-radius:7px;
+  padding:8px 18px;font-weight:700;font-size:12px;cursor:pointer;font-family:var(--sans);
+}
+.f-btn:disabled{opacity:.3;cursor:not-allowed}
+.f-btn.primary{background:var(--accent);color:#fff}
+
+@keyframes spin{to{transform:rotate(360deg)}}
+@keyframes fadeUp{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+.fade{animation:fadeUp .2s ease forwards}
+
+/* callout box */
+.callout{
+  border-radius:8px;padding:10px 14px;margin-bottom:12px;font-size:12.5px;line-height:1.6;
+}
+.callout.warn{background:#451a0322;border:1px solid #f9731633;color:#fdba74}
+.callout.info{background:#0c1a3322;border:1px solid #3b82f633;color:#93c5fd}
+.callout.success{background:#052e1622;border:1px solid #22c55e33;color:#86efac}
+
+/* compare table */
+.compare{width:100%;border-collapse:collapse;font-size:12px;margin-bottom:12px}
+.compare th{background:var(--dim);padding:7px 12px;text-align:left;font-size:10px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted)}
+.compare td{padding:7px 12px;border-bottom:1px solid var(--border);color:#94a3b8;vertical-align:top}
+.compare td:first-child{color:var(--text);font-weight:600;font-family:var(--mono);font-size:11px}
+</style>
+</head>
+<body>
+<div id="app">
+  <div id="topbar">
+    <button class="track-tab active" data-track="html" onclick="switchTrack('html')">
+      <span class="dot" style="background:#f97316"></span> HTML
+    </button>
+    <button class="track-tab" data-track="css" onclick="switchTrack('css')">
+      <span class="dot" style="background:#3b82f6"></span> CSS
+    </button>
+    <button class="track-tab" data-track="js" onclick="switchTrack('js')">
+      <span class="dot" style="background:#eab308"></span> JavaScript
+    </button>
+    <button class="track-tab" data-track="react" onclick="switchTrack('react')">
+      <span class="dot" style="background:#06b6d4"></span> React
+    </button>
+    <div id="topbar-right">
+      <div class="progress-pill">
+        <span id="prog-text">0 / 0</span>
+        <div class="progress-bar"><div class="progress-fill" id="prog-fill" style="width:0%"></div></div>
+      </div>
+    </div>
+  </div>
+
+  <div id="main">
+    <div id="sidebar" id="sidebar"></div>
+
+    <div id="center">
+      <div id="lesson-header">
+        <div id="lesson-title">Loading...</div>
+        <div id="lesson-concept"></div>
+      </div>
+      <div id="tabs">
+        <button class="tab-btn active" onclick="switchTab('learn')">📖 Learn</button>
+        <button class="tab-btn" onclick="switchTab('demo')">🎮 Demo</button>
+        <button class="tab-btn" onclick="switchTab('practice')">✏️ Practice</button>
+      </div>
+      <div id="content" class="fade"></div>
+      <div id="footer">
+        <button class="f-btn" id="btn-prev" onclick="navigate(-1)">← Previous</button>
+        <div id="pdots"></div>
+        <button class="f-btn primary" id="btn-next" onclick="navigate(1)">Next →</button>
+      </div>
+    </div>
+
+    <div id="sidebox">
+      <div id="sidebox-header">💡 Tips & Connections</div>
+      <div id="sidebox-body"></div>
+    </div>
+  </div>
+</div>
+
+<script>
+// ═══════════════════════════════════════════════════════════════
+// COURSE DATA
+// ═══════════════════════════════════════════════════════════════
+const TRACKS = {
+  html: {
+    color: '#f97316',
+    label: 'HTML',
+    lessons: [
+      {
+        id:'h1', emoji:'🏗️', title:'What is HTML?',
+        concept:'HTML is the <b>skeleton</b> of every webpage — it defines structure, not looks.',
+        learn: `<div class="section-title">What HTML Does</div>
+<p class="theory-text">HTML (HyperText Markup Language) gives a webpage its <strong>structure</strong>. Think of building a house — HTML is the walls, floors, and rooms. CSS paints it, JavaScript makes it move.</p>
+<div class="callout info">Every website you've ever visited — Google, YouTube, Instagram — starts with an HTML file.</div>
+<div class="section-title">How HTML Works</div>
+<p class="theory-text">HTML uses <strong>tags</strong> — words in angle brackets — to label content. Most tags come in pairs: an opening tag and a closing tag.</p>
+<div class="code-block"><span class="ct">&lt;h1&gt;</span>I am a heading<span class="ct">&lt;/h1&gt;</span>
+<span class="ct">&lt;p&gt;</span>I am a paragraph.<span class="ct">&lt;/p&gt;</span>
+<span class="ct">&lt;img</span> <span class="cp">src</span>=<span class="cv">"photo.jpg"</span> <span class="ct">/&gt;</span>  <span class="cc">← self-closing, no pair needed</span></div>
+<div class="section-title">The Basic Page Structure</div>
+<div class="code-block"><span class="ct">&lt;!DOCTYPE html&gt;</span>              <span class="cc">← tells browser: this is HTML5</span>
+<span class="ct">&lt;html</span> <span class="cp">lang</span>=<span class="cv">"en"</span><span class="ct">&gt;</span>               <span class="cc">← root element</span>
+  <span class="ct">&lt;head&gt;</span>                       <span class="cc">← invisible info (title, styles)</span>
+    <span class="ct">&lt;title&gt;</span>My Page<span class="ct">&lt;/title&gt;</span>
+  <span class="ct">&lt;/head&gt;</span>
+  <span class="ct">&lt;body&gt;</span>                       <span class="cc">← everything visible goes here</span>
+    <span class="ct">&lt;h1&gt;</span>Hello World!<span class="ct">&lt;/h1&gt;</span>
+    <span class="ct">&lt;p&gt;</span>My first webpage.<span class="ct">&lt;/p&gt;</span>
+  <span class="ct">&lt;/body&gt;</span>
+<span class="ct">&lt;/html&gt;</span></div>`,
+        demo: 'html_structure',
+        practice: {q:'What tag makes a large heading?', a:'h1', hint:'It\'s written as &lt;h1&gt;'},
+        tips: [
+          {track:'css', color:'#3b82f6', title:'CSS Connection', body:'HTML gives structure. CSS gives style. You\'ll link a CSS file in the <code>&lt;head&gt;</code> with <code>&lt;link rel="stylesheet"&gt;</code>'},
+          {track:'js', color:'#eab308', title:'JS Connection', body:'JavaScript finds HTML elements using <code>document.getElementById()</code> or <code>querySelector()</code> to make them interactive.'},
+          {type:'tip', title:'Remember', body:'If you forget to close a tag, the browser will try to guess — but your layout will break in weird ways. Always close your tags!'},
+        ]
+      },
+      {
+        id:'h2', emoji:'📝', title:'Text & Headings',
+        concept:'Headings h1–h6 create <b>hierarchy</b>. Paragraphs hold body text.',
+        learn: `<div class="section-title">Heading Tags</div>
+<p class="theory-text">There are 6 heading levels. Use them for hierarchy — like a document outline. h1 is the biggest (page title), h6 is smallest.</p>
+<div class="code-block"><span class="ct">&lt;h1&gt;</span>Page Title — use once per page<span class="ct">&lt;/h1&gt;</span>
+<span class="ct">&lt;h2&gt;</span>Main Section<span class="ct">&lt;/h2&gt;</span>
+<span class="ct">&lt;h3&gt;</span>Sub-section<span class="ct">&lt;/h3&gt;</span>
+<span class="ct">&lt;h4&gt;</span>Sub-sub-section<span class="ct">&lt;/h4&gt;</span></div>
+<div class="section-title">Text Tags</div>
+<div class="code-block"><span class="ct">&lt;p&gt;</span>A paragraph. Main block of text.<span class="ct">&lt;/p&gt;</span>
+
+<span class="ct">&lt;strong&gt;</span>Bold — important text<span class="ct">&lt;/strong&gt;</span>
+<span class="ct">&lt;em&gt;</span>Italic — emphasized text<span class="ct">&lt;/em&gt;</span>
+<span class="ct">&lt;br</span> <span class="ct">/&gt;</span>  <span class="cc">← line break (no closing tag)</span>
+<span class="ct">&lt;hr</span> <span class="ct">/&gt;</span>  <span class="cc">← horizontal line divider</span>
+
+<span class="ct">&lt;span</span> <span class="cp">style</span>=<span class="cv">"color:red"</span><span class="ct">&gt;</span>Inline colored text<span class="ct">&lt;/span&gt;</span>
+<span class="ct">&lt;small&gt;</span>Fine print<span class="ct">&lt;/small&gt;</span></div>
+<div class="section-title">Lists</div>
+<div class="code-block"><span class="cc">/* Unordered (bullet) list */</span>
+<span class="ct">&lt;ul&gt;</span>
+  <span class="ct">&lt;li&gt;</span>Apples<span class="ct">&lt;/li&gt;</span>
+  <span class="ct">&lt;li&gt;</span>Bananas<span class="ct">&lt;/li&gt;</span>
+<span class="ct">&lt;/ul&gt;</span>
+
+<span class="cc">/* Ordered (numbered) list */</span>
+<span class="ct">&lt;ol&gt;</span>
+  <span class="ct">&lt;li&gt;</span>Step one<span class="ct">&lt;/li&gt;</span>
+  <span class="ct">&lt;li&gt;</span>Step two<span class="ct">&lt;/li&gt;</span>
+<span class="ct">&lt;/ol&gt;</span></div>`,
+        demo: 'html_text',
+        practice: {q:'Write a tag to make text bold and important', a:'strong', hint:'Not just visual — use the semantic tag for "important"'},
+        tips: [
+          {track:'css', color:'#3b82f6', title:'Styling Text', body:'In CSS, you\'ll use <code>font-size</code>, <code>color</code>, <code>font-weight</code>, <code>font-family</code> to style these tags.'},
+          {type:'tip', title:'Semantic vs Visual', body:'Use <code>&lt;strong&gt;</code> not <code>&lt;b&gt;</code> for bold. They look the same but <code>&lt;strong&gt;</code> tells screen readers it\'s important.'},
+        ]
+      },
+      {
+        id:'h3', emoji:'🔗', title:'Links & Images',
+        concept:'<b>Attributes</b> add extra info to tags — like href for links and src for images.',
+        learn: `<div class="section-title">Links — &lt;a&gt; tag</div>
+<p class="theory-text">The <code>&lt;a&gt;</code> (anchor) tag creates clickable links. The <code>href</code> attribute tells it WHERE to go.</p>
+<div class="code-block"><span class="cc">/* Link to another website */</span>
+<span class="ct">&lt;a</span> <span class="cp">href</span>=<span class="cv">"https://google.com"</span><span class="ct">&gt;</span>Go to Google<span class="ct">&lt;/a&gt;</span>
+
+<span class="cc">/* Open in a new tab */</span>
+<span class="ct">&lt;a</span> <span class="cp">href</span>=<span class="cv">"https://google.com"</span> <span class="cp">target</span>=<span class="cv">"_blank"</span><span class="ct">&gt;</span>New Tab<span class="ct">&lt;/a&gt;</span>
+
+<span class="cc">/* Link to a section on same page */</span>
+<span class="ct">&lt;a</span> <span class="cp">href</span>=<span class="cv">"#contact"</span><span class="ct">&gt;</span>Jump to Contact<span class="ct">&lt;/a&gt;</span>
+<span class="ct">&lt;section</span> <span class="cp">id</span>=<span class="cv">"contact"</span><span class="ct">&gt;</span>...<span class="ct">&lt;/section&gt;</span>
+
+<span class="cc">/* Email link */</span>
+<span class="ct">&lt;a</span> <span class="cp">href</span>=<span class="cv">"mailto:me@example.com"</span><span class="ct">&gt;</span>Email Me<span class="ct">&lt;/a&gt;</span></div>
+<div class="section-title">Images — &lt;img&gt; tag</div>
+<div class="code-block"><span class="cc">/* Self-closing — no &lt;/img&gt; needed */</span>
+<span class="ct">&lt;img</span>
+  <span class="cp">src</span>=<span class="cv">"photo.jpg"</span>          <span class="cc">← file path or URL</span>
+  <span class="cp">alt</span>=<span class="cv">"A scenic mountain"</span>  <span class="cc">← description (required!)</span>
+  <span class="cp">width</span>=<span class="cv">"300"</span>            <span class="cc">← in pixels</span>
+<span class="ct">/&gt;</span>
+
+<span class="cc">/* Image from the web */</span>
+<span class="ct">&lt;img</span> <span class="cp">src</span>=<span class="cv">"https://example.com/img.jpg"</span> <span class="cp">alt</span>=<span class="cv">"desc"</span> <span class="ct">/&gt;</span>
+
+<span class="cc">/* Clickable image = wrap img in a tag */</span>
+<span class="ct">&lt;a</span> <span class="cp">href</span>=<span class="cv">"https://site.com"</span><span class="ct">&gt;</span>
+  <span class="ct">&lt;img</span> <span class="cp">src</span>=<span class="cv">"logo.png"</span> <span class="cp">alt</span>=<span class="cv">"Logo"</span> <span class="ct">/&gt;</span>
+<span class="ct">&lt;/a&gt;</span></div>`,
+        demo: 'html_links',
+        practice: {q:'What attribute defines where a link goes?', a:'href', hint:'It stands for Hypertext REFerence'},
+        tips: [
+          {type:'tip', title:'Alt text matters', body:'Always write descriptive <code>alt</code> text on images. Screen readers use it for visually impaired users, and it shows if the image fails to load.'},
+          {track:'js', color:'#eab308', title:'JS: Click Events', body:'In JavaScript, you can add <code>onclick</code> to any element, not just links — to run code when clicked.'},
+        ]
+      },
+      {
+        id:'h4', emoji:'📦', title:'Divs, Sections & Layout',
+        concept:'<b>div</b> and semantic tags are containers — they group content for styling & layout.',
+        learn: `<div class="section-title">The div — Your Main Container</div>
+<p class="theory-text"><code>&lt;div&gt;</code> is a generic box. It has no visual meaning — it's just a container you can style with CSS. Most layouts are built from divs.</p>
+<div class="code-block"><span class="ct">&lt;div</span> <span class="cp">class</span>=<span class="cv">"card"</span><span class="ct">&gt;</span>
+  <span class="ct">&lt;h2&gt;</span>Card Title<span class="ct">&lt;/h2&gt;</span>
+  <span class="ct">&lt;p&gt;</span>Card content here<span class="ct">&lt;/p&gt;</span>
+<span class="ct">&lt;/div&gt;</span>
+
+<span class="cc">/* Multiple divs side by side (via CSS) */</span>
+<span class="ct">&lt;div</span> <span class="cp">class</span>=<span class="cv">"container"</span><span class="ct">&gt;</span>
+  <span class="ct">&lt;div</span> <span class="cp">class</span>=<span class="cv">"col"</span><span class="ct">&gt;</span>Left<span class="ct">&lt;/div&gt;</span>
+  <span class="ct">&lt;div</span> <span class="cp">class</span>=<span class="cv">"col"</span><span class="ct">&gt;</span>Right<span class="ct">&lt;/div&gt;</span>
+<span class="ct">&lt;/div&gt;</span></div>
+<div class="section-title">Semantic Tags (use these instead of div where it fits)</div>
+<p class="theory-text">Semantic tags tell the browser and developers WHAT the content is — not just that it's a box.</p>
+<div class="code-block"><span class="ct">&lt;header&gt;</span>   Top of page — logo, navigation<span class="ct">&lt;/header&gt;</span>
+<span class="ct">&lt;nav&gt;</span>      Navigation links<span class="ct">&lt;/nav&gt;</span>
+<span class="ct">&lt;main&gt;</span>     Main page content (one per page)<span class="ct">&lt;/main&gt;</span>
+<span class="ct">&lt;section&gt;</span> A distinct part of the page<span class="ct">&lt;/section&gt;</span>
+<span class="ct">&lt;article&gt;</span> A self-contained piece (blog post)<span class="ct">&lt;/article&gt;</span>
+<span class="ct">&lt;aside&gt;</span>   Sidebar, related content<span class="ct">&lt;/aside&gt;</span>
+<span class="ct">&lt;footer&gt;</span>  Bottom of page<span class="ct">&lt;/footer&gt;</span></div>
+<div class="section-title">class vs id</div>
+<div class="code-block"><span class="cc">/* class — reusable, use on many elements */</span>
+<span class="ct">&lt;div</span> <span class="cp">class</span>=<span class="cv">"card"</span><span class="ct">&gt;</span>...<span class="ct">&lt;/div&gt;</span>
+<span class="ct">&lt;div</span> <span class="cp">class</span>=<span class="cv">"card"</span><span class="ct">&gt;</span>...<span class="ct">&lt;/div&gt;</span>
+
+<span class="cc">/* id — unique, use only once per page */</span>
+<span class="ct">&lt;div</span> <span class="cp">id</span>=<span class="cv">"main-hero"</span><span class="ct">&gt;</span>...<span class="ct">&lt;/div&gt;</span></div>`,
+        demo: 'html_divs',
+        practice: {q:'Which attribute do you add to multiple elements of the same type?', a:'class', hint:'Starts with c, not i'},
+        tips: [
+          {track:'css', color:'#3b82f6', title:'CSS Selectors', body:'In CSS: <code>.classname</code> targets a class, <code>#idname</code> targets an id. Classes are reusable, ids are unique.'},
+          {track:'react', color:'#06b6d4', title:'React Note', body:'In React/JSX, you write <code>className="card"</code> instead of <code>class="card"</code> because <code>class</code> is a reserved word in JavaScript.'},
+        ]
+      },
+      {
+        id:'h5', emoji:'📋', title:'Forms & Inputs',
+        concept:'Forms collect user input — text, choices, files — and submit it.',
+        learn: `<div class="section-title">The Form Tag</div>
+<p class="theory-text">Forms let users type and submit data. Every input inside a form should have a <code>name</code> attribute and a <code>&lt;label&gt;</code>.</p>
+<div class="code-block"><span class="ct">&lt;form</span> <span class="cp">action</span>=<span class="cv">"/submit"</span> <span class="cp">method</span>=<span class="cv">"post"</span><span class="ct">&gt;</span>
+
+  <span class="cc">/* Label + Text input (linked by for/id) */</span>
+  <span class="ct">&lt;label</span> <span class="cp">for</span>=<span class="cv">"name"</span><span class="ct">&gt;</span>Your Name:<span class="ct">&lt;/label&gt;</span>
+  <span class="ct">&lt;input</span> <span class="cp">type</span>=<span class="cv">"text"</span> <span class="cp">id</span>=<span class="cv">"name"</span> <span class="cp">name</span>=<span class="cv">"name"</span> <span class="cp">placeholder</span>=<span class="cv">"Enter name"</span> <span class="ct">/&gt;</span>
+
+  <span class="cc">/* Email (validates format) */</span>
+  <span class="ct">&lt;input</span> <span class="cp">type</span>=<span class="cv">"email"</span> <span class="cp">name</span>=<span class="cv">"email"</span> <span class="cp">required</span> <span class="ct">/&gt;</span>
+
+  <span class="cc">/* Password (hides text) */</span>
+  <span class="ct">&lt;input</span> <span class="cp">type</span>=<span class="cv">"password"</span> <span class="cp">name</span>=<span class="cv">"pass"</span> <span class="ct">/&gt;</span>
+
+  <span class="cc">/* Dropdown */</span>
+  <span class="ct">&lt;select</span> <span class="cp">name</span>=<span class="cv">"role"</span><span class="ct">&gt;</span>
+    <span class="ct">&lt;option</span> <span class="cp">value</span>=<span class="cv">"dev"</span><span class="ct">&gt;</span>Developer<span class="ct">&lt;/option&gt;</span>
+    <span class="ct">&lt;option</span> <span class="cp">value</span>=<span class="cv">"design"</span><span class="ct">&gt;</span>Designer<span class="ct">&lt;/option&gt;</span>
+  <span class="ct">&lt;/select&gt;</span>
+
+  <span class="cc">/* Multi-line text */</span>
+  <span class="ct">&lt;textarea</span> <span class="cp">name</span>=<span class="cv">"message"</span> <span class="cp">rows</span>=<span class="cv">"4"</span><span class="ct">&gt;&lt;/textarea&gt;</span>
+
+  <span class="cc">/* Checkbox */</span>
+  <span class="ct">&lt;input</span> <span class="cp">type</span>=<span class="cv">"checkbox"</span> <span class="cp">name</span>=<span class="cv">"agree"</span> <span class="ct">/&gt;</span> I agree
+
+  <span class="cc">/* Submit button */</span>
+  <span class="ct">&lt;button</span> <span class="cp">type</span>=<span class="cv">"submit"</span><span class="ct">&gt;</span>Send<span class="ct">&lt;/button&gt;</span>
+<span class="ct">&lt;/form&gt;</span></div>`,
+        demo: 'html_forms',
+        practice: {q:'What input type auto-validates email format?', a:'email', hint:'type="___"'},
+        tips: [
+          {track:'js', color:'#eab308', title:'JS Forms', body:'In JavaScript, use <code>e.preventDefault()</code> to stop a form from refreshing the page, then handle the data yourself.'},
+          {track:'react', color:'#06b6d4', title:'React Forms', body:'React uses "controlled inputs" — every keystroke updates state via <code>onChange</code>. No <code>action</code> attribute needed.'},
+        ]
+      },
+    ]
+  },
+
+  css: {
+    color: '#3b82f6',
+    label: 'CSS',
+    lessons: [
+      {
+        id:'c1', emoji:'🎨', title:'What is CSS & Selectors',
+        concept:'CSS <b>selects</b> HTML elements and applies visual styles to them.',
+        learn: `<div class="section-title">CSS Syntax</div>
+<p class="theory-text">CSS (Cascading Style Sheets) controls how HTML looks. Every CSS rule has a <strong>selector</strong> (what to style) and <strong>declarations</strong> (how to style it).</p>
+<div class="code-block"><span class="cc">/* Anatomy of a CSS rule */</span>
+<span class="cp">selector</span> {
+  <span class="cp">property</span>: <span class="cv">value</span>;
+  <span class="cp">property</span>: <span class="cv">value</span>;
+}
+
+<span class="cc">/* Real examples */</span>
+<span class="cp">h1</span> {
+  <span class="cp">color</span>: <span class="cv">navy</span>;
+  <span class="cp">font-size</span>: <span class="cv">32px</span>;
+}
+
+<span class="cp">p</span> {
+  <span class="cp">color</span>: <span class="cv">#555555</span>;
+  <span class="cp">line-height</span>: <span class="cv">1.6</span>;
+}</div>
+<div class="section-title">The 3 Ways to Add CSS</div>
+<div class="code-block"><span class="cc">/* 1. External file (BEST — separate .css file) */</span>
+<span class="ct">&lt;link</span> <span class="cp">rel</span>=<span class="cv">"stylesheet"</span> <span class="cp">href</span>=<span class="cv">"style.css"</span><span class="ct">&gt;</span>
+
+<span class="cc">/* 2. Internal (inside &lt;head&gt; tag) */</span>
+<span class="ct">&lt;style&gt;</span>
+  h1 { color: blue; }
+<span class="ct">&lt;/style&gt;</span>
+
+<span class="cc">/* 3. Inline (directly on element — avoid!) */</span>
+<span class="ct">&lt;h1</span> <span class="cp">style</span>=<span class="cv">"color: blue;"</span><span class="ct">&gt;</span>Title<span class="ct">&lt;/h1&gt;</span></div>
+<div class="section-title">Selectors</div>
+<div class="code-block"><span class="cp">h1</span>        { } <span class="cc">/* tag — all h1 elements */</span>
+<span class="cp">.card</span>     { } <span class="cc">/* class — elements with class="card" */</span>
+<span class="cp">#hero</span>     { } <span class="cc">/* id — element with id="hero" */</span>
+<span class="cp">h1, h2</span>    { } <span class="cc">/* multiple — h1 AND h2 */</span>
+<span class="cp">nav a</span>     { } <span class="cc">/* descendant — &lt;a&gt; inside &lt;nav&gt; */</span>
+<span class="cp">button:hover</span>{ } <span class="cc">/* pseudo-class — on mouse hover */</span></div>`,
+        demo: 'css_selectors',
+        practice: {q:'How do you select all elements with class="box"?', a:'.box', hint:'Classes use a dot prefix'},
+        tips: [
+          {track:'html', color:'#f97316', title:'HTML Link', body:'CSS links to HTML via the <code>class</code> and <code>id</code> attributes you put on HTML tags.'},
+          {track:'react', color:'#06b6d4', title:'React Note', body:'In React, you write <code>className="card"</code> instead of <code>class="card"</code>. CSS still works the same way.'},
+        ]
+      },
+      {
+        id:'c2', emoji:'📏', title:'Box Model — Spacing',
+        concept:'Every element is a box: <b>content → padding → border → margin</b>.',
+        learn: `<div class="section-title">The Box Model</div>
+<p class="theory-text">Every HTML element is a rectangular box with 4 layers. Understanding this is the #1 key to controlling layout.</p>
+<div class="code-block"><span class="cc">/* From inside out: */</span>
+<span class="cp">.box</span> {
+  <span class="cc">/* 1. Content — the actual text/image */</span>
+  <span class="cp">width</span>: <span class="cv">200px</span>;
+  <span class="cp">height</span>: <span class="cv">100px</span>;
+
+  <span class="cc">/* 2. Padding — space INSIDE the border */</span>
+  <span class="cp">padding</span>: <span class="cv">20px</span>;          <span class="cc">← all 4 sides</span>
+  <span class="cp">padding</span>: <span class="cv">10px 20px</span>;    <span class="cc">← top/bottom left/right</span>
+  <span class="cp">padding-top</span>: <span class="cv">10px</span>;     <span class="cc">← one side</span>
+
+  <span class="cc">/* 3. Border — the visible edge */</span>
+  <span class="cp">border</span>: <span class="cv">2px solid black</span>;
+  <span class="cp">border-radius</span>: <span class="cv">8px</span>;    <span class="cc">← rounded corners</span>
+
+  <span class="cc">/* 4. Margin — space OUTSIDE the border */</span>
+  <span class="cp">margin</span>: <span class="cv">16px</span>;
+  <span class="cp">margin</span>: <span class="cv">0 auto</span>;        <span class="cc">← center horizontally</span>
+}</div>
+<div class="callout warn">By default, padding and border ADD to the element's size. Fix this with: <code>box-sizing: border-box</code> — include it in every project!</div>
+<div class="code-block"><span class="cc">/* Fix box-sizing for everything */</span>
+<span class="cp">*, *::before, *::after</span> {
+  <span class="cp">box-sizing</span>: <span class="cv">border-box</span>;
+}</div>`,
+        demo: 'css_boxmodel',
+        practice: {q:'Which property adds space OUTSIDE an element?', a:'margin', hint:'Think of the outermost layer'},
+        tips: [
+          {type:'tip', title:'Margin vs Padding', body:'Padding is space <em>inside</em> the border (background color fills it). Margin is space <em>outside</em> (transparent).'},
+          {track:'react', color:'#06b6d4', title:'React Inline Styles', body:'In React inline styles, use camelCase: <code>paddingTop</code>, <code>borderRadius</code>, <code>marginBottom</code>.'},
+        ]
+      },
+      {
+        id:'c3', emoji:'🎨', title:'Colors, Fonts & Typography',
+        concept:'CSS controls all visual text properties — size, weight, family, color, spacing.',
+        learn: `<div class="section-title">Colors</div>
+<div class="code-block"><span class="cc">/* Named colors */</span>
+<span class="cp">color</span>: <span class="cv">red</span>;
+<span class="cp">color</span>: <span class="cv">cornflowerblue</span>;
+
+<span class="cc">/* Hex — most common */</span>
+<span class="cp">color</span>: <span class="cv">#ff0000</span>;   <span class="cc">← red</span>
+<span class="cp">color</span>: <span class="cv">#3b82f6</span>;   <span class="cc">← blue</span>
+
+<span class="cc">/* RGB */</span>
+<span class="cp">color</span>: <span class="cv">rgb(59, 130, 246)</span>;
+
+<span class="cc">/* RGBA — with transparency */</span>
+<span class="cp">color</span>: <span class="cv">rgba(59, 130, 246, 0.5)</span>;  <span class="cc">← 50% opacity</span>
+
+<span class="cc">/* Background */</span>
+<span class="cp">background-color</span>: <span class="cv">#f8fafc</span>;
+<span class="cp">background</span>: <span class="cv">linear-gradient(135deg, #667eea, #764ba2)</span>;</div>
+<div class="section-title">Typography</div>
+<div class="code-block"><span class="cp">p</span> {
+  <span class="cp">font-family</span>: <span class="cv">'Roboto', Arial, sans-serif</span>;
+  <span class="cp">font-size</span>: <span class="cv">16px</span>;       <span class="cc">← base size</span>
+  <span class="cp">font-size</span>: <span class="cv">1rem</span>;       <span class="cc">← relative to root (better)</span>
+  <span class="cp">font-weight</span>: <span class="cv">400</span>;      <span class="cc">← normal (700 = bold)</span>
+  <span class="cp">line-height</span>: <span class="cv">1.6</span>;     <span class="cc">← spacing between lines</span>
+  <span class="cp">letter-spacing</span>: <span class="cv">0.5px</span>;
+  <span class="cp">text-align</span>: <span class="cv">center</span>;   <span class="cc">← left|right|center|justify</span>
+  <span class="cp">text-transform</span>: <span class="cv">uppercase</span>;
+  <span class="cp">text-decoration</span>: <span class="cv">underline</span>;
+}</div>
+<div class="section-title">Google Fonts (free)</div>
+<div class="code-block"><span class="cc">/* Add in &lt;head&gt; */</span>
+<span class="ct">&lt;link</span> <span class="cp">href</span>=<span class="cv">"https://fonts.googleapis.com/css2?family=Poppins:wght@400;700&display=swap"</span> <span class="cp">rel</span>=<span class="cv">"stylesheet"</span><span class="ct">&gt;</span>
+
+<span class="cc">/* Use in CSS */</span>
+<span class="cp">body</span> { <span class="cp">font-family</span>: <span class="cv">'Poppins', sans-serif</span>; }</div>`,
+        demo: 'css_typography',
+        practice: {q:'What CSS property sets text size?', a:'font-size', hint:'Two words, hyphenated'},
+        tips: [
+          {type:'tip', title:'rem vs px', body:'Use <code>rem</code> for font sizes (scales with user settings). Use <code>px</code> for borders and small fixed values.'},
+          {track:'js', color:'#eab308', title:'JS Color Change', body:'In JS: <code>element.style.color = "red"</code> — but for real apps, toggle CSS classes instead of setting styles directly.'},
+        ]
+      },
+      {
+        id:'c4', emoji:'📐', title:'Flexbox — Modern Layout',
+        concept:'Flexbox aligns items in a row or column — the most useful layout tool in CSS.',
+        learn: `<div class="section-title">What is Flexbox?</div>
+<p class="theory-text">Flexbox makes it easy to line items up, space them out, and center them — things that used to be frustratingly hard in CSS.</p>
+<div class="code-block"><span class="cc">/* Turn any container into a flexbox */</span>
+<span class="cp">.container</span> {
+  <span class="cp">display</span>: <span class="cv">flex</span>;
+
+  <span class="cc">/* Direction */</span>
+  <span class="cp">flex-direction</span>: <span class="cv">row</span>;       <span class="cc">← default (left to right)</span>
+  <span class="cp">flex-direction</span>: <span class="cv">column</span>;    <span class="cc">← top to bottom</span>
+
+  <span class="cc">/* Alignment on main axis (horizontal if row) */</span>
+  <span class="cp">justify-content</span>: <span class="cv">flex-start</span>;   <span class="cc">← left</span>
+  <span class="cp">justify-content</span>: <span class="cv">flex-end</span>;     <span class="cc">← right</span>
+  <span class="cp">justify-content</span>: <span class="cv">center</span>;       <span class="cc">← middle</span>
+  <span class="cp">justify-content</span>: <span class="cv">space-between</span>;<span class="cc">← push to edges</span>
+  <span class="cp">justify-content</span>: <span class="cv">space-around</span>; <span class="cc">← equal space</span>
+
+  <span class="cc">/* Alignment on cross axis (vertical if row) */</span>
+  <span class="cp">align-items</span>: <span class="cv">stretch</span>;   <span class="cc">← fill height (default)</span>
+  <span class="cp">align-items</span>: <span class="cv">center</span>;    <span class="cc">← vertically centered!</span>
+  <span class="cp">align-items</span>: <span class="cv">flex-start</span>;<span class="cc">← top</span>
+
+  <span class="cc">/* Wrapping */</span>
+  <span class="cp">flex-wrap</span>: <span class="cv">wrap</span>;         <span class="cc">← items wrap to next line</span>
+
+  <span class="cc">/* Gap between items */</span>
+  <span class="cp">gap</span>: <span class="cv">16px</span>;
+}</div>
+<div class="callout success">Center anything perfectly: <code>display: flex; justify-content: center; align-items: center;</code></div>`,
+        demo: 'css_flexbox',
+        practice: {q:'Which property spaces flex items with gaps between them?', a:'justify-content: space-between', hint:'Or just: space-between'},
+        tips: [
+          {type:'tip', title:'Flex children', body:'Flex properties go on the CONTAINER. Children get <code>flex: 1</code> to grow equally, or specific sizes.'},
+          {track:'react', color:'#06b6d4', title:'React Inline Flex', body:'In React: <code>style={{display:"flex", gap:"16px", alignItems:"center"}}</code> — same properties, camelCase.'},
+        ]
+      },
+      {
+        id:'c5', emoji:'📱', title:'Responsive Design',
+        concept:'Media queries make your site look good on <b>all screen sizes</b>.',
+        learn: `<div class="section-title">Media Queries</div>
+<p class="theory-text">A media query checks the screen size and applies different styles. Design mobile-first: start with small screens, then add styles for larger ones.</p>
+<div class="code-block"><span class="cc">/* Base styles — mobile first */</span>
+<span class="cp">.container</span> {
+  <span class="cp">flex-direction</span>: <span class="cv">column</span>;  <span class="cc">← stack on mobile</span>
+  <span class="cp">padding</span>: <span class="cv">16px</span>;
+}
+
+<span class="cc">/* Tablet and up (768px+) */</span>
+<span class="cm">@media</span> (<span class="cp">min-width</span>: <span class="cv">768px</span>) {
+  <span class="cp">.container</span> {
+    <span class="cp">flex-direction</span>: <span class="cv">row</span>;    <span class="cc">← side by side on tablet</span>
+    <span class="cp">padding</span>: <span class="cv">24px</span>;
+  }
+}
+
+<span class="cc">/* Desktop (1024px+) */</span>
+<span class="cm">@media</span> (<span class="cp">min-width</span>: <span class="cv">1024px</span>) {
+  <span class="cp">.container</span> {
+    <span class="cp">max-width</span>: <span class="cv">1200px</span>;
+    <span class="cp">margin</span>: <span class="cv">0 auto</span>;        <span class="cc">← center on wide screens</span>
+  }
+}</div>
+<div class="section-title">Common Responsive Patterns</div>
+<div class="code-block"><span class="cc">/* Responsive font size */</span>
+<span class="cp">h1</span> {
+  <span class="cp">font-size</span>: <span class="cv">24px</span>;        <span class="cc">← mobile</span>
+}
+<span class="cm">@media</span> (<span class="cp">min-width</span>: <span class="cv">768px</span>) {
+  <span class="cp">h1</span> { <span class="cp">font-size</span>: <span class="cv">40px</span>; } <span class="cc">← desktop</span>
+}
+
+<span class="cc">/* Responsive grid */</span>
+<span class="cp">.grid</span> {
+  <span class="cp">display</span>: <span class="cv">grid</span>;
+  <span class="cp">grid-template-columns</span>: <span class="cv">1fr</span>;     <span class="cc">← 1 col mobile</span>
+}
+<span class="cm">@media</span> (<span class="cp">min-width</span>: <span class="cv">768px</span>) {
+  <span class="cp">.grid</span> { <span class="cp">grid-template-columns</span>: <span class="cv">1fr 1fr</span>; } <span class="cc">← 2 cols</span>
+}</div>`,
+        demo: 'css_responsive',
+        practice: {q:'What CSS rule checks screen size?', a:'media query', hint:'@_____'},
+        tips: [
+          {type:'tip', title:'Mobile First', body:'Start writing CSS for small screens. Use <code>min-width</code> to add complexity for larger screens. It\'s easier than fighting large-screen styles.'},
+          {track:'html', color:'#f97316', title:'HTML Required', body:'Add this meta tag in your HTML <code>&lt;head&gt;</code> for responsive to work: <code>&lt;meta name="viewport" content="width=device-width, initial-scale=1"&gt;</code>'},
+        ]
+      },
+    ]
+  },
+
+  js: {
+    color: '#eab308',
+    label: 'JavaScript',
+    lessons: [
+      {
+        id:'j1', emoji:'⚡', title:'Variables & Data Types',
+        concept:'Variables store data. JS has 3 modern ways to declare them: <b>const, let, var</b>.',
+        learn: `<div class="section-title">Declaring Variables</div>
+<p class="theory-text">Variables are named containers for data. JavaScript has three keywords — use <code>const</code> by default, <code>let</code> when you need to change the value.</p>
+<div class="code-block"><span class="cm">const</span> name = <span class="cv">"Alice"</span>;         <span class="cc">← can't be reassigned</span>
+<span class="cm">let</span> count = <span class="cv">0</span>;                <span class="cc">← can change</span>
+<span class="cm">var</span> old = <span class="cv">"avoid this"</span>;      <span class="cc">← old way, has quirks</span>
+
+<span class="cc">/* Reassigning */</span>
+count = count + <span class="cv">1</span>;            <span class="cc">← ok, count was let</span>
+count += <span class="cv">1</span>;                   <span class="cc">← same thing, shorter</span>
+<span class="cc">// name = "Bob";               ← ERROR! const can't change</span></div>
+<div class="section-title">Data Types</div>
+<div class="code-block"><span class="cc">/* String — text */</span>
+<span class="cm">const</span> greeting = <span class="cv">"Hello"</span>;
+<span class="cm">const</span> name = <span class="cv">'Alice'</span>;
+<span class="cm">const</span> msg = <span class="cv">\`Hi \${name}!\`</span>;      <span class="cc">← template literal</span>
+
+<span class="cc">/* Number */</span>
+<span class="cm">const</span> age = <span class="cv">25</span>;
+<span class="cm">const</span> price = <span class="cv">9.99</span>;
+
+<span class="cc">/* Boolean */</span>
+<span class="cm">const</span> isLoggedIn = <span class="cv">true</span>;
+<span class="cm">const</span> hasErrors = <span class="cv">false</span>;
+
+<span class="cc">/* Array — ordered list */</span>
+<span class="cm">const</span> colors = [<span class="cv">"red"</span>, <span class="cv">"green"</span>, <span class="cv">"blue"</span>];
+colors[<span class="cv">0</span>] <span class="cc">// "red"</span>
+
+<span class="cc">/* Object — key-value pairs */</span>
+<span class="cm">const</span> user = {
+  name: <span class="cv">"Alice"</span>,
+  age: <span class="cv">25</span>,
+  isAdmin: <span class="cv">true</span>
+};
+user.name  <span class="cc">// "Alice"</span>
+user[<span class="cv">"age"</span>]<span class="cc">// 25</span></div>`,
+        demo: 'js_variables',
+        practice: {q:'How do you declare a variable that CANNOT be reassigned?', a:'const', hint:'Short for "constant"'},
+        tips: [
+          {type:'tip', title:'const vs let', body:'Use <code>const</code> by default. Only switch to <code>let</code> when you know the value will change (like a counter). Never use <code>var</code>.'},
+          {track:'react', color:'#06b6d4', title:'React State', body:'In React, <code>useState</code> is like <code>let</code> — but smarter. When you update state, React re-renders the component.'},
+        ]
+      },
+      {
+        id:'j2', emoji:'🔀', title:'Functions & Arrow Functions',
+        concept:'Functions are reusable blocks of code. Arrow functions are the modern shorthand.',
+        learn: `<div class="section-title">Regular Functions</div>
+<div class="code-block"><span class="cc">/* Declaration */</span>
+<span class="cm">function</span> <span class="cf">greet</span>(name) {
+  <span class="cm">return</span> <span class="cv">\`Hello, \${name}!\`</span>;
+}
+
+<span class="cf">greet</span>(<span class="cv">"Alice"</span>); <span class="cc">// "Hello, Alice!"</span>
+
+<span class="cc">/* With default parameter */</span>
+<span class="cm">function</span> <span class="cf">greet</span>(name = <span class="cv">"stranger"</span>) {
+  <span class="cm">return</span> <span class="cv">\`Hello, \${name}!\`</span>;
+}
+<span class="cf">greet</span>(); <span class="cc">// "Hello, stranger!"</span>
+
+<span class="cc">/* Multiple parameters */</span>
+<span class="cm">function</span> <span class="cf">add</span>(a, b) {
+  <span class="cm">return</span> a + b;
+}
+<span class="cf">add</span>(<span class="cv">3</span>, <span class="cv">4</span>); <span class="cc">// 7</span></div>
+<div class="section-title">Arrow Functions (modern, preferred)</div>
+<div class="code-block"><span class="cc">/* Same as above but shorter */</span>
+<span class="cm">const</span> <span class="cf">greet</span> = (name) => {
+  <span class="cm">return</span> <span class="cv">\`Hello, \${name}!\`</span>;
+};
+
+<span class="cc">/* If only one line, skip return and braces */</span>
+<span class="cm">const</span> <span class="cf">greet</span> = name => <span class="cv">\`Hello, \${name}!\`</span>;
+<span class="cm">const</span> <span class="cf">double</span> = n => n * <span class="cv">2</span>;
+<span class="cm">const</span> <span class="cf">add</span> = (a, b) => a + b;
+
+<span class="cc">/* No parameters */</span>
+<span class="cm">const</span> <span class="cf">sayHi</span> = () => <span class="cv">"Hi!"</span>;
+
+<span class="cc">/* As callback */</span>
+[<span class="cv">1</span>,<span class="cv">2</span>,<span class="cv">3</span>].<span class="cf">map</span>(n => n * <span class="cv">2</span>); <span class="cc">// [2, 4, 6]</span></div>`,
+        demo: 'js_functions',
+        practice: {q:'Convert to arrow function: function double(n) { return n * 2; }', a:'const double = n => n * 2', hint:'Remove function keyword, add =>'},
+        tips: [
+          {track:'react', color:'#06b6d4', title:'React + Arrow Functions', body:'React components are arrow functions! <code>const MyComponent = () => { return &lt;div&gt;...&lt;/div&gt;; }</code>'},
+          {type:'tip', title:'Callbacks', body:'Functions can be passed as arguments to other functions. This is called a "callback" — extremely common in JS and React event handlers.'},
+        ]
+      },
+      {
+        id:'j3', emoji:'🎯', title:'DOM — Selecting & Changing HTML',
+        concept:'The DOM lets JavaScript <b>find, read, and change</b> any HTML element on the page.',
+        learn: `<div class="section-title">What is the DOM?</div>
+<p class="theory-text">The DOM (Document Object Model) is how JavaScript sees your HTML — as a tree of objects you can manipulate. When JS changes the DOM, the browser instantly updates what you see.</p>
+<div class="section-title">Selecting Elements</div>
+<div class="code-block"><span class="cc">/* Find one element */</span>
+<span class="cm">const</span> title = document.<span class="cf">getElementById</span>(<span class="cv">"main-title"</span>);
+<span class="cm">const</span> btn = document.<span class="cf">querySelector</span>(<span class="cv">".submit-btn"</span>);
+<span class="cm">const</span> nav = document.<span class="cf">querySelector</span>(<span class="cv">"nav"</span>);
+
+<span class="cc">/* Find multiple elements */</span>
+<span class="cm">const</span> items = document.<span class="cf">querySelectorAll</span>(<span class="cv">".card"</span>);
+items.<span class="cf">forEach</span>(item => <span class="cf">console</span>.<span class="cf">log</span>(item));</div>
+<div class="section-title">Changing Elements</div>
+<div class="code-block"><span class="cm">const</span> el = document.<span class="cf">querySelector</span>(<span class="cv">"#title"</span>);
+
+<span class="cc">/* Change text content */</span>
+el.textContent = <span class="cv">"New Title"</span>;
+
+<span class="cc">/* Change HTML inside */</span>
+el.innerHTML = <span class="cv">"&lt;strong&gt;Bold Title&lt;/strong&gt;"</span>;
+
+<span class="cc">/* Change styles */</span>
+el.style.color = <span class="cv">"red"</span>;
+el.style.fontSize = <span class="cv">"24px"</span>;
+
+<span class="cc">/* Toggle CSS class (better than inline styles) */</span>
+el.classList.<span class="cf">add</span>(<span class="cv">"active"</span>);
+el.classList.<span class="cf">remove</span>(<span class="cv">"hidden"</span>);
+el.classList.<span class="cf">toggle</span>(<span class="cv">"dark"</span>);
+
+<span class="cc">/* Change attribute */</span>
+el.<span class="cf">setAttribute</span>(<span class="cv">"href"</span>, <span class="cv">"https://new.com"</span>);</div>`,
+        demo: 'js_dom',
+        practice: {q:'Which method finds an element by its id?', a:'getElementById', hint:'document.get___By___("myId")'},
+        tips: [
+          {track:'html', color:'#f97316', title:'HTML id needed', body:'To select an element by ID, the HTML element must have an <code>id</code> attribute: <code>&lt;div id="myBox"&gt;</code>'},
+          {track:'react', color:'#06b6d4', title:'React vs DOM', body:'In React, you almost NEVER use <code>getElementById</code>. React handles DOM updates automatically through state. That\'s the big advantage!'},
+        ]
+      },
+      {
+        id:'j4', emoji:'🖱️', title:'Events — onclick, onchange & More',
+        concept:'Events let you <b>respond</b> to user actions — clicks, typing, hovering, submitting.',
+        learn: `<div class="section-title">addEventListener</div>
+<p class="theory-text">The modern way to respond to events is <code>addEventListener</code> — it keeps your HTML clean and lets you add multiple listeners.</p>
+<div class="code-block"><span class="cm">const</span> btn = document.<span class="cf">querySelector</span>(<span class="cv">"#myBtn"</span>);
+
+btn.<span class="cf">addEventListener</span>(<span class="cv">"click"</span>, () => {
+  <span class="cf">alert</span>(<span class="cv">"Button clicked!"</span>);
+});
+
+<span class="cc">/* The event object gives you details */</span>
+btn.<span class="cf">addEventListener</span>(<span class="cv">"click"</span>, (event) => {
+  <span class="cf">console</span>.<span class="cf">log</span>(<span class="cv">"Clicked at:"</span>, event.clientX, event.clientY);
+  event.<span class="cf">preventDefault</span>(); <span class="cc">← stop default behavior</span>
+});</div>
+<div class="section-title">Common Events</div>
+<div class="code-block"><span class="cc">/* Mouse events */</span>
+el.<span class="cf">addEventListener</span>(<span class="cv">"click"</span>, handler);
+el.<span class="cf">addEventListener</span>(<span class="cv">"dblclick"</span>, handler);
+el.<span class="cf">addEventListener</span>(<span class="cv">"mouseover"</span>, handler);
+el.<span class="cf">addEventListener</span>(<span class="cv">"mouseout"</span>, handler);
+
+<span class="cc">/* Keyboard events */</span>
+el.<span class="cf">addEventListener</span>(<span class="cv">"keydown"</span>, (e) => {
+  <span class="cm">if</span> (e.key === <span class="cv">"Enter"</span>) <span class="cf">doSomething</span>();
+});
+
+<span class="cc">/* Input events */</span>
+input.<span class="cf">addEventListener</span>(<span class="cv">"input"</span>, (e) => {
+  <span class="cf">console</span>.<span class="cf">log</span>(e.target.value); <span class="cc">← what user typed</span>
+});
+
+<span class="cc">/* Form submit */</span>
+form.<span class="cf">addEventListener</span>(<span class="cv">"submit"</span>, (e) => {
+  e.<span class="cf">preventDefault</span>(); <span class="cc">← STOP page refresh!</span>
+  <span class="cf">processFormData</span>();
+});</div>`,
+        demo: 'js_events',
+        practice: {q:'What method stops a form from refreshing the page?', a:'preventDefault', hint:'event.___()'},
+        tips: [
+          {track:'react', color:'#06b6d4', title:'React Events', body:'In React: <code>&lt;button onClick={handleClick}&gt;</code> — pass a function reference (no parentheses). React wraps events in a synthetic system.'},
+          {type:'tip', title:'Inline vs addEventListener', body:'Inline <code>onclick="..."</code> in HTML is fine for learning but messy in real projects. Prefer <code>addEventListener</code> in a JS file.'},
+        ]
+      },
+      {
+        id:'j5', emoji:'🌐', title:'Arrays, Loops & Fetch (API Calls)',
+        concept:'Arrays store lists. Loops process them. Fetch loads data from the internet.',
+        learn: `<div class="section-title">Array Methods (the most useful ones)</div>
+<div class="code-block"><span class="cm">const</span> nums = [<span class="cv">1</span>, <span class="cv">2</span>, <span class="cv">3</span>, <span class="cv">4</span>, <span class="cv">5</span>];
+
+<span class="cc">/* forEach — loop, no return value */</span>
+nums.<span class="cf">forEach</span>(n => <span class="cf">console</span>.<span class="cf">log</span>(n));
+
+<span class="cc">/* map — transform each item, returns new array */</span>
+<span class="cm">const</span> doubled = nums.<span class="cf">map</span>(n => n * <span class="cv">2</span>);
+<span class="cc">// [2, 4, 6, 8, 10]</span>
+
+<span class="cc">/* filter — keep items that pass test */</span>
+<span class="cm">const</span> evens = nums.<span class="cf">filter</span>(n => n % <span class="cv">2</span> === <span class="cv">0</span>);
+<span class="cc">// [2, 4]</span>
+
+<span class="cc">/* find — first match */</span>
+<span class="cm">const</span> first = nums.<span class="cf">find</span>(n => n > <span class="cv">3</span>); <span class="cc">// 4</span>
+
+<span class="cc">/* Add / Remove */</span>
+nums.<span class="cf">push</span>(<span class="cv">6</span>);          <span class="cc">← add to end</span>
+nums.<span class="cf">pop</span>();            <span class="cc">← remove from end</span>
+[...<span class="cv">nums</span>, <span class="cv">6</span>]          <span class="cc">← spread: add without mutating</span></div>
+<div class="section-title">Fetch — Load Data from an API</div>
+<div class="code-block"><span class="cc">/* Basic fetch */</span>
+<span class="cf">fetch</span>(<span class="cv">"https://api.example.com/users"</span>)
+  .<span class="cf">then</span>(res => res.<span class="cf">json</span>())     <span class="cc">← parse JSON</span>
+  .<span class="cf">then</span>(data => {
+    <span class="cf">console</span>.<span class="cf">log</span>(data);          <span class="cc">← your data is here</span>
+  })
+  .<span class="cf">catch</span>(err => <span class="cf">console</span>.<span class="cf">error</span>(err));
+
+<span class="cc">/* Modern: async/await (cleaner) */</span>
+<span class="cm">async function</span> <span class="cf">loadUsers</span>() {
+  <span class="cm">const</span> res = <span class="cm">await</span> <span class="cf">fetch</span>(<span class="cv">"https://api.example.com/users"</span>);
+  <span class="cm">const</span> data = <span class="cm">await</span> res.<span class="cf">json</span>();
+  <span class="cf">console</span>.<span class="cf">log</span>(data);
+}
+<span class="cf">loadUsers</span>();</div>`,
+        demo: 'js_arrays',
+        practice: {q:'Which array method creates a NEW array by transforming each item?', a:'map', hint:'Like a map of transformations'},
+        tips: [
+          {track:'react', color:'#06b6d4', title:'React + Arrays', body:'In React, <code>.map()</code> is how you render lists: <code>{users.map(u => &lt;div key={u.id}&gt;{u.name}&lt;/div&gt;)}</code>'},
+          {track:'react', color:'#06b6d4', title:'React + Fetch', body:'Put fetch inside <code>useEffect(() => { fetch(...) }, [])</code> to load data when a component first appears.'},
+        ]
+      },
+    ]
+  },
+
+  react: {
+    color: '#06b6d4',
+    label: 'React',
+    lessons: [
+      {
+        id:'r1', emoji:'⚛️', title:'Why React? Components & JSX',
+        concept:'React builds UIs from <b>components</b> — reusable JS functions that return JSX.',
+        learn: `<div class="section-title">The Problem React Solves</div>
+<p class="theory-text">With vanilla JS, you manually update the DOM every time data changes. In big apps this becomes a tangled mess. React solves this by letting you <strong>describe</strong> the UI, and it handles all the DOM updates.</p>
+<div class="code-block"><span class="cc">// Vanilla JS — you manage the DOM manually</span>
+<span class="cm">const</span> count = <span class="cv">0</span>;
+<span class="cm">function</span> <span class="cf">increment</span>() {
+  count++;
+  document.<span class="cf">getElementById</span>(<span class="cv">"num"</span>).textContent = count;
+}
+
+<span class="cc">// React — you just describe what to show</span>
+<span class="cm">function</span> <span class="cf">Counter</span>() {
+  <span class="cm">const</span> [count, setCount] = <span class="cf">useState</span>(<span class="cv">0</span>);
+  <span class="cm">return</span> (
+    &lt;<span class="ct">div</span>&gt;
+      &lt;<span class="ct">p</span>&gt;{count}&lt;/<span class="ct">p</span>&gt;
+      &lt;<span class="ct">button</span> onClick={() => <span class="cf">setCount</span>(count + <span class="cv">1</span>)}&gt;+1&lt;/<span class="ct">button</span>&gt;
+    &lt;/<span class="ct">div</span>&gt;
+  );
+}</div>
+<div class="section-title">JSX Rules (HTML inside JS)</div>
+<div class="code-block"><span class="cc">// 1. class → className</span>
+&lt;<span class="ct">div</span> <span class="cp">className</span>=<span class="cv">"card"</span>&gt;...&lt;/<span class="ct">div</span>&gt;
+
+<span class="cc">// 2. All tags must close</span>
+&lt;<span class="ct">img</span> <span class="cp">src</span>=<span class="cv">"x.jpg"</span> /&gt;   &lt;<span class="ct">br</span> /&gt;
+
+<span class="cc">// 3. {} for JavaScript expressions</span>
+&lt;<span class="ct">h1</span>&gt;Hello, {name}!&lt;/<span class="ct">h1</span>&gt;
+&lt;<span class="ct">p</span>&gt;{<span class="cv">2</span> + <span class="cv">2</span>}&lt;/<span class="ct">p</span>&gt;
+&lt;<span class="ct">p</span>&gt;{isAdmin ? <span class="cv">"Admin"</span> : <span class="cv">"User"</span>}&lt;/<span class="ct">p</span>&gt;
+
+<span class="cc">// 4. One root element (use fragment if needed)</span>
+<span class="cm">return</span> (
+  &lt;&gt;
+    &lt;<span class="ct">h1</span>&gt;Title&lt;/<span class="ct">h1</span>&gt;
+    &lt;<span class="ct">p</span>&gt;Text&lt;/<span class="ct">p</span>&gt;
+  &lt;/&gt;
+);</div>`,
+        demo: 'react_intro',
+        practice: {q:'In JSX, how do you write the class attribute?', a:'className', hint:'camelCase version'},
+        tips: [
+          {track:'js', color:'#eab308', title:'JS Required', body:'React IS JavaScript. You need to know variables, functions, array methods (.map, .filter), and arrow functions before React clicks.'},
+          {track:'html', color:'#f97316', title:'JSX vs HTML', body:'JSX looks like HTML but it\'s JS. Main differences: <code>className</code>, self-closing tags, camelCase events (<code>onClick</code> not <code>onclick</code>).'},
+        ]
+      },
+      {
+        id:'r2', emoji:'🔄', title:'useState — Interactive Components',
+        concept:'<b>useState</b> gives a component memory. Change state → React re-renders automatically.',
+        learn: `<div class="section-title">useState Syntax</div>
+<div class="code-block"><span class="cm">import</span> { useState } <span class="cm">from</span> <span class="cv">'react'</span>;
+
+<span class="cm">const</span> [value, setValue] = <span class="cf">useState</span>(initialValue);
+<span class="cc">//     ↑ read   ↑ update   ↑ starting value</span>
+
+<span class="cc">// Examples:</span>
+<span class="cm">const</span> [count, setCount] = <span class="cf">useState</span>(<span class="cv">0</span>);
+<span class="cm">const</span> [name, setName]   = <span class="cf">useState</span>(<span class="cv">''</span>);
+<span class="cm">const</span> [open, setOpen]   = <span class="cf">useState</span>(<span class="cv">false</span>);
+<span class="cm">const</span> [list, setList]   = <span class="cf">useState</span>([]);</div>
+<div class="section-title">Updating State — The Golden Rules</div>
+<div class="code-block"><span class="cc">// ❌ NEVER mutate state directly</span>
+count = count + <span class="cv">1</span>;      <span class="cc">// WRONG — won't re-render</span>
+list.<span class="cf">push</span>(item);         <span class="cc">// WRONG — mutating array</span>
+
+<span class="cc">// ✅ ALWAYS use the setter function</span>
+<span class="cf">setCount</span>(count + <span class="cv">1</span>);
+<span class="cf">setList</span>([...list, item]);<span class="cc">// spread = copy + add</span>
+<span class="cf">setOpen</span>(!open);          <span class="cc">// toggle</span>
+
+<span class="cc">// Real component:</span>
+<span class="cm">function</span> <span class="cf">LikeButton</span>() {
+  <span class="cm">const</span> [likes, setLikes] = <span class="cf">useState</span>(<span class="cv">0</span>);
+  <span class="cm">const</span> [liked, setLiked] = <span class="cf">useState</span>(<span class="cv">false</span>);
+
+  <span class="cm">function</span> <span class="cf">handleClick</span>() {
+    <span class="cm">if</span> (!liked) {
+      <span class="cf">setLikes</span>(likes + <span class="cv">1</span>);
+      <span class="cf">setLiked</span>(<span class="cv">true</span>);
+    } <span class="cm">else</span> {
+      <span class="cf">setLikes</span>(likes - <span class="cv">1</span>);
+      <span class="cf">setLiked</span>(<span class="cv">false</span>);
+    }
+  }
+
+  <span class="cm">return</span> &lt;<span class="ct">button</span> onClick={handleClick}&gt;
+    {liked ? <span class="cv">"❤️"</span> : <span class="cv">"🤍"</span>} {likes}
+  &lt;/<span class="ct">button</span>&gt;;
+}</div>`,
+        demo: 'react_state',
+        practice: {q:'To add an item to a state array, what spread syntax do you use?', a:'[...items, newItem]', hint:'Spread operator + new item'},
+        tips: [
+          {track:'js', color:'#eab308', title:'JS Destructuring', body:'<code>const [count, setCount] = useState(0)</code> uses array destructuring — a JS feature. <code>const [a, b] = [1, 2]</code> → a=1, b=2.'},
+          {type:'tip', title:'Multiple states', body:'You can call useState as many times as you want in one component. Each state is independent.'},
+        ]
+      },
+      {
+        id:'r3', emoji:'📦', title:'Props — Reusable Components',
+        concept:'Props are inputs to components — like function parameters. They flow parent → child.',
+        learn: `<div class="section-title">Passing Props</div>
+<div class="code-block"><span class="cc">// Parent sends props as attributes:</span>
+<span class="cm">function</span> <span class="cf">App</span>() {
+  <span class="cm">return</span> (
+    &lt;<span class="ct">div</span>&gt;
+      &lt;<span class="ct">Card</span> title=<span class="cv">"React"</span> color=<span class="cv">"#06b6d4"</span> /&gt;
+      &lt;<span class="ct">Card</span> title=<span class="cv">"CSS"</span>   color=<span class="cv">"#3b82f6"</span> /&gt;
+    &lt;/<span class="ct">div</span>&gt;
+  );
+}
+
+<span class="cc">// Child receives via destructuring:</span>
+<span class="cm">function</span> <span class="cf">Card</span>({ title, color }) {
+  <span class="cm">return</span> (
+    &lt;<span class="ct">div</span> style={{ borderLeft: <span class="cv">\`4px solid \${color}\`</span> }}&gt;
+      &lt;<span class="ct">h2</span>&gt;{title}&lt;/<span class="ct">h2</span>&gt;
+    &lt;/<span class="ct">div</span>&gt;
+  );
+}</div>
+<div class="section-title">Default Props & Children</div>
+<div class="code-block"><span class="cc">// Default values:</span>
+<span class="cm">function</span> <span class="cf">Button</span>({ label = <span class="cv">"Click me"</span>, color = <span class="cv">"blue"</span> }) {
+  <span class="cm">return</span> &lt;<span class="ct">button</span> style={{ background: color }}&gt;{label}&lt;/<span class="ct">button</span>&gt;;
+}
+
+<span class="cc">// children prop — what goes BETWEEN the tags:</span>
+<span class="cm">function</span> <span class="cf">Card</span>({ children, title }) {
+  <span class="cm">return</span> (
+    &lt;<span class="ct">div</span> className=<span class="cv">"card"</span>&gt;
+      &lt;<span class="ct">h3</span>&gt;{title}&lt;/<span class="ct">h3</span>&gt;
+      {children}
+    &lt;/<span class="ct">div</span>&gt;
+  );
+}
+
+<span class="cc">// Usage:</span>
+&lt;<span class="ct">Card</span> title=<span class="cv">"My Card"</span>&gt;
+  &lt;<span class="ct">p</span>&gt;Any content can go here!&lt;/<span class="ct">p</span>&gt;
+  &lt;<span class="ct">button</span>&gt;Action&lt;/<span class="ct">button</span>&gt;
+&lt;/<span class="ct">Card</span>&gt;</div>`,
+        demo: 'react_props',
+        practice: {q:'Props flow in which direction?', a:'parent to child', hint:'Data always flows one way — downward'},
+        tips: [
+          {track:'js', color:'#eab308', title:'Destructuring', body:'<code>function Card({ title, color })</code> is JS object destructuring. Same as: <code>function Card(props) { const {title, color} = props; }</code>'},
+          {type:'tip', title:'Read-Only!', body:'Never modify props inside a component. Props are READ-ONLY. If you need to store changing data, use state.'},
+        ]
+      },
+      {
+        id:'r4', emoji:'🌊', title:'useEffect — Side Effects',
+        concept:'useEffect runs code AFTER render — for API calls, timers, and subscriptions.',
+        learn: `<div class="section-title">useEffect Syntax</div>
+<div class="code-block"><span class="cm">import</span> { useEffect } <span class="cm">from</span> <span class="cv">'react'</span>;
+
+<span class="cf">useEffect</span>(() => {
+  <span class="cc">// your code runs here after render</span>
+}, [dependencies]);
+<span class="cc">//  ↑ empty = run once, [val] = run when val changes</span></div>
+<div class="section-title">Three Patterns</div>
+<div class="code-block"><span class="cc">// 1. Run ONCE on mount:</span>
+<span class="cf">useEffect</span>(() => {
+  <span class="cf">fetchData</span>();
+}, []); <span class="cc">← empty array</span>
+
+<span class="cc">// 2. Run when value changes:</span>
+<span class="cf">useEffect</span>(() => {
+  document.title = <span class="cv">\`\${count} items\`</span>;
+}, [count]); <span class="cc">← re-runs when count changes</span>
+
+<span class="cc">// 3. Cleanup (stop timers, remove listeners):</span>
+<span class="cf">useEffect</span>(() => {
+  <span class="cm">const</span> id = <span class="cf">setInterval</span>(() => {
+    <span class="cf">setTime</span>(t => t + <span class="cv">1</span>);
+  }, <span class="cv">1000</span>);
+
+  <span class="cm">return</span> () => <span class="cf">clearInterval</span>(id); <span class="cc">← cleanup!</span>
+}, []);</div>
+<div class="section-title">Fetching Data (most common use)</div>
+<div class="code-block"><span class="cm">function</span> <span class="cf">UserList</span>() {
+  <span class="cm">const</span> [users, setUsers] = <span class="cf">useState</span>([]);
+  <span class="cm">const</span> [loading, setLoading] = <span class="cf">useState</span>(<span class="cv">true</span>);
+
+  <span class="cf">useEffect</span>(() => {
+    <span class="cf">fetch</span>(<span class="cv">"https://jsonplaceholder.typicode.com/users"</span>)
+      .<span class="cf">then</span>(r => r.<span class="cf">json</span>())
+      .<span class="cf">then</span>(data => {
+        <span class="cf">setUsers</span>(data);
+        <span class="cf">setLoading</span>(<span class="cv">false</span>);
+      });
+  }, []); <span class="cc">← fetch once when component loads</span>
+
+  <span class="cm">if</span> (loading) <span class="cm">return</span> &lt;<span class="ct">p</span>&gt;Loading...&lt;/<span class="ct">p</span>&gt;;
+  <span class="cm">return</span> users.<span class="cf">map</span>(u => &lt;<span class="ct">div</span> key={u.id}&gt;{u.name}&lt;/<span class="ct">div</span>&gt;);
+}</div>`,
+        demo: 'react_effect',
+        practice: {q:'What dependency array value makes useEffect run only once on mount?', a:'[]', hint:'An empty array'},
+        tips: [
+          {track:'js', color:'#eab308', title:'JS Fetch', body:'useEffect with fetch is just the JS <code>fetch()</code> API wrapped in React\'s effect system. You learned fetch in the JS track!'},
+          {type:'tip', title:'Missing dependencies', body:'If your effect uses a variable, add it to the dependency array. Missing deps cause stale data bugs.'},
+        ]
+      },
+      {
+        id:'r5', emoji:'🚀', title:'Build a Full Mini Website',
+        concept:'Compose components together to build a complete, interactive website.',
+        learn: `<div class="section-title">Complete Portfolio Structure</div>
+<div class="code-block"><span class="cc">// App.jsx — root component</span>
+<span class="cm">function</span> <span class="cf">App</span>() {
+  <span class="cm">const</span> [page, setPage] = <span class="cf">useState</span>(<span class="cv">'home'</span>);
+
+  <span class="cm">return</span> (
+    &lt;<span class="ct">div</span>&gt;
+      &lt;<span class="ct">Navbar</span> activePage={page} onNavigate={setPage} /&gt;
+      {page === <span class="cv">'home'</span>    &amp;&amp; &lt;<span class="ct">Hero</span> /&gt;}
+      {page === <span class="cv">'projects'</span> &amp;&amp; &lt;<span class="ct">Projects</span> /&gt;}
+      {page === <span class="cv">'contact'</span>  &amp;&amp; &lt;<span class="ct">Contact</span> /&gt;}
+      &lt;<span class="ct">Footer</span> /&gt;
+    &lt;/<span class="ct">div</span>&gt;
+  );
+}</div>
+<div class="section-title">Navbar Component</div>
+<div class="code-block"><span class="cm">function</span> <span class="cf">Navbar</span>({ activePage, onNavigate }) {
+  <span class="cm">const</span> links = [<span class="cv">'home'</span>, <span class="cv">'projects'</span>, <span class="cv">'contact'</span>];
+  <span class="cm">return</span> (
+    &lt;<span class="ct">nav</span>&gt;
+      {links.<span class="cf">map</span>(link => (
+        &lt;<span class="ct">a</span>
+          key={link}
+          className={activePage === link ? <span class="cv">'active'</span> : <span class="cv">''</span>}
+          onClick={() => <span class="cf">onNavigate</span>(link)}
+        &gt;
+          {link}
+        &lt;/<span class="ct">a</span>&gt;
+      ))}
+    &lt;/<span class="ct">nav</span>&gt;
+  );
+}</div>
+<div class="section-title">Your Learning Path</div>
+<div class="callout success">You've now seen all the building blocks! Here's what to build next:
+→ Week 1: Portfolio page (HTML + CSS)
+→ Week 2: Add JS interactivity (mobile menu, dark mode)
+→ Week 3: Convert to React
+→ Week 4: Add React Router for real pages
+→ Month 2: Next.js (full-stack) + Tailwind CSS</div>`,
+        demo: 'react_fullsite',
+        practice: {q:'In React, how do you pass a function from parent to child?', a:'via props', hint:'Like any other prop — just pass the function'},
+        tips: [
+          {type:'tip', title:'What to build', body:'The best way to solidify everything: build a personal portfolio site. It uses HTML structure, CSS layout, JS interactivity, and React components all together.'},
+          {track:'css', color:'#3b82f6', title:'Tailwind CSS', body:'Once comfortable with CSS, learn Tailwind CSS — utility classes like <code>flex gap-4 p-4 rounded-lg</code> that go directly on JSX elements.'},
+        ]
+      },
+    ]
+  }
+};
+
+// ═══════════════════════════════════════════════════════════════
+// DEMO RENDERERS
+// ═══════════════════════════════════════════════════════════════
+const DEMOS = {
+  html_structure: () => `
+    <div style="background:#0a1120;border-radius:8px;padding:16px;font-family:monospace;font-size:12px;color:#94a3b8;margin-bottom:12px">
+      <div style="color:#64748b;margin-bottom:8px">▼ Browser renders your HTML as:</div>
+      <div style="background:#1e293b;border-radius:6px;padding:12px">
+        <div style="font-size:22px;font-weight:800;color:#e2e8f0;border-bottom:2px solid #334155;padding-bottom:8px;margin-bottom:8px">Hello World!</div>
+        <div style="color:#94a3b8;font-size:14px;font-family:sans-serif">My first webpage. This is a paragraph of text that explains the content of the page.</div>
+      </div>
+    </div>
+    <div style="font-size:12px;color:#475569;text-align:center">↑ This is what &lt;h1&gt; and &lt;p&gt; look like in a browser</div>`,
+
+  html_text: () => {
+    const items = [
+      ['<h1>', 'huge', '800', '#f1f5f9'],
+      ['<h2>', 'large', '700', '#e2e8f0'],
+      ['<h3>', 'medium-large', '600', '#cbd5e1'],
+      ['<p>', 'normal', '400', '#94a3b8'],
+      ['<small>', '11px', '400', '#64748b'],
+    ];
+    return `<div style="padding:4px">` +
+      items.map(([tag,size,weight,color])=>`<div style="display:flex;align-items:center;gap:12px;padding:8px 10px;background:#0a1120;border-radius:7px;margin-bottom:6px">
+        <code style="color:#7dd3fc;font-size:11px;width:60px;flex-shrink:0">${tag}</code>
+        <span style="font-weight:${weight};color:${color};font-family:sans-serif">${tag} — ${size} text</span>
+      </div>`).join('') +
+      `<div style="background:#0a1120;border-radius:7px;padding:10px;margin-top:8px">
+        <div style="color:#64748b;font-size:11px;margin-bottom:6px">Lists:</div>
+        <div style="display:flex;gap:16px">
+          <div><div style="color:#94a3b8;font-size:12px">• Apples</div><div style="color:#94a3b8;font-size:12px">• Bananas</div><div style="color:#475569;font-size:10px;margin-top:4px">&lt;ul&gt;</div></div>
+          <div><div style="color:#94a3b8;font-size:12px">1. Step one</div><div style="color:#94a3b8;font-size:12px">2. Step two</div><div style="color:#475569;font-size:10px;margin-top:4px">&lt;ol&gt;</div></div>
+        </div>
+      </div></div>`;
+  },
+
+  html_links: () => `
+    <div style="padding:8px">
+      <div style="margin-bottom:10px">
+        <div style="color:#64748b;font-size:11px;margin-bottom:6px">&lt;a href="..."&gt; tag:</div>
+        <a href="#" onclick="return false" style="color:#3b82f6;font-size:14px;font-family:sans-serif;text-decoration:underline">← This is a clickable link (blue, underlined)</a>
+      </div>
+      <div style="background:#0a1120;border-radius:8px;padding:12px;margin-bottom:10px">
+        <div style="color:#64748b;font-size:11px;margin-bottom:8px">Image demo (using placeholder):</div>
+        <div style="display:flex;align-items:center;gap:12px">
+          <div style="width:80px;height:60px;background:linear-gradient(135deg,#3b82f6,#8b5cf6);border-radius:6px;display:flex;align-items:center;justify-content:center;color:#fff;font-size:10px;text-align:center;font-family:sans-serif">image<br/>here</div>
+          <div style="font-size:12px;color:#64748b;font-family:monospace">&lt;img src="photo.jpg"<br/> alt="description"<br/> width="80" /&gt;</div>
+        </div>
+      </div>
+      <div style="font-size:12px;color:#475569;text-align:center">Always add alt="" to images!</div>
+    </div>`,
+
+  html_divs: () => `
+    <div style="padding:8px">
+      <div style="color:#64748b;font-size:11px;margin-bottom:8px">div containers group content for CSS styling:</div>
+      <div style="display:flex;gap:8px;margin-bottom:10px">
+        <div style="flex:1;background:#1e3a5f;border:1px solid #3b82f633;border-radius:8px;padding:12px;text-align:center">
+          <div style="color:#3b82f6;font-weight:700;font-size:12px">div.card</div>
+          <div style="color:#64748b;font-size:11px;margin-top:4px">Card content</div>
+        </div>
+        <div style="flex:1;background:#1e3a5f;border:1px solid #3b82f633;border-radius:8px;padding:12px;text-align:center">
+          <div style="color:#3b82f6;font-weight:700;font-size:12px">div.card</div>
+          <div style="color:#64748b;font-size:11px;margin-top:4px">Card content</div>
+        </div>
+      </div>
+      <div style="background:#0a1120;border-radius:8px;padding:10px">
+        <div style="color:#64748b;font-size:10px;margin-bottom:6px">Semantic layout:</div>
+        <div style="border:1px dashed #334155;border-radius:4px;padding:6px;margin-bottom:4px;color:#f97316;font-size:10px;text-align:center">&lt;header&gt; — navigation, logo</div>
+        <div style="border:1px dashed #334155;border-radius:4px;padding:10px;margin-bottom:4px;color:#22c55e;font-size:10px;text-align:center">&lt;main&gt; — page content</div>
+        <div style="border:1px dashed #334155;border-radius:4px;padding:6px;color:#3b82f6;font-size:10px;text-align:center">&lt;footer&gt; — links, copyright</div>
+      </div>
+    </div>`,
+
+  html_forms: () => {
+    return `<div style="padding:8px" id="html-form-demo">
+      <div style="color:#64748b;font-size:11px;margin-bottom:8px">Interactive form (try it!):</div>
+      <input type="text" placeholder="Your name" class="d-input" id="demo-name" style="margin-bottom:8px" />
+      <input type="email" placeholder="Email address" class="d-input" id="demo-email" style="margin-bottom:8px" />
+      <select class="d-input" id="demo-role" style="margin-bottom:12px;background:#050810;color:#e2e8f0">
+        <option>Frontend Developer</option>
+        <option>Backend Developer</option>
+        <option>Designer</option>
+      </select>
+      <button class="d-btn" style="width:100%;background:#f97316" onclick="
+        const n=document.getElementById('demo-name').value;
+        const e=document.getElementById('demo-email').value;
+        if(n&&e){document.getElementById('form-result').innerHTML='<div style=\\'background:#052e1644;border:1px solid #22c55e44;border-radius:8px;padding:12px;margin-top:10px;font-size:13px;color:#86efac\\'>✅ Submitted!<br/>Name: '+n+'<br/>Email: '+e+'</div>'}else{alert('Fill in name and email!')}
+      ">Submit Form</button>
+      <div id="form-result"></div>
+    </div>`;
+  },
+
+  css_selectors: () => `
+    <div style="padding:8px">
+      <div style="color:#64748b;font-size:11px;margin-bottom:10px">Selector Playground — hover over boxes:</div>
+      <style>.sel-box{padding:10px 14px;border-radius:7px;margin-bottom:6px;font-size:13px;font-family:sans-serif;transition:all .2s;cursor:default}
+      .sel-box:hover{transform:translateX(4px)}</style>
+      <div class="sel-box" style="background:#1e2d42;color:#e2e8f0">tag selector → <code style="color:#7dd3fc">div { }</code></div>
+      <div class="sel-box highlight-class" style="background:#1e3a5f;color:#93c5fd">class selector → <code style="color:#7dd3fc">.highlight-class { }</code></div>
+      <div class="sel-box" id="unique-box" style="background:#2d1b69;color:#c4b5fd">id selector → <code style="color:#7dd3fc">#unique-box { }</code></div>
+      <div class="sel-box" style="background:#1a2e1a;color:#86efac">pseudo → <code style="color:#7dd3fc">div:hover { transform: translateX(4px) }</code></div>
+      <div style="font-size:11px;color:#334155;margin-top:8px;text-align:center">Hover the boxes to see :hover in action!</div>
+    </div>`,
+
+  css_boxmodel: () => `
+    <div style="padding:8px;display:flex;flex-direction:column;align-items:center">
+      <div style="color:#64748b;font-size:11px;margin-bottom:12px">Interactive Box Model:</div>
+      <div style="background:#3b82f611;border:2px dashed #3b82f644;padding:16px;border-radius:4px;display:inline-block">
+        <div style="color:#3b82f6;font-size:10px;margin-bottom:4px;text-align:center">MARGIN</div>
+        <div style="background:#f9731622;border:2px solid #f97316;padding:14px;border-radius:4px">
+          <div style="color:#f97316;font-size:10px;margin-bottom:4px;text-align:center">BORDER</div>
+          <div style="background:#22c55e22;padding:12px;border-radius:4px">
+            <div style="color:#22c55e;font-size:10px;margin-bottom:4px;text-align:center">PADDING</div>
+            <div style="background:#1e293b;padding:10px 16px;border-radius:4px;color:#e2e8f0;font-size:12px;text-align:center;white-space:nowrap">
+              CONTENT
+            </div>
+          </div>
+        </div>
+      </div>
+      <div style="display:flex;gap:12px;margin-top:12px;font-size:11px">
+        <span style="color:#3b82f6">■ margin</span>
+        <span style="color:#f97316">■ border</span>
+        <span style="color:#22c55e">■ padding</span>
+      </div>
+    </div>`,
+
+  css_typography: () => `
+    <div style="padding:8px">
+      <div style="background:#0a1120;border-radius:8px;padding:14px;margin-bottom:8px">
+        <p style="font-size:24px;font-weight:800;color:#f1f5f9;line-height:1.2;margin-bottom:6px">font-size: 24px; font-weight: 800</p>
+        <p style="font-size:16px;font-weight:400;color:#94a3b8;line-height:1.6;margin-bottom:6px">Normal body text — font-size: 16px; line-height: 1.6</p>
+        <p style="font-size:13px;letter-spacing:3px;text-transform:uppercase;color:#3b82f6;font-weight:600">letter-spacing + uppercase</p>
+      </div>
+      <div style="display:flex;gap:8px">
+        <div style="flex:1;background:#0a1120;border-radius:6px;padding:10px;text-align:center">
+          <div style="color:#f59e0b;font-size:13px">color: #f59e0b</div>
+        </div>
+        <div style="flex:1;background:linear-gradient(135deg,#3b82f6,#8b5cf6);border-radius:6px;padding:10px;text-align:center">
+          <div style="color:#fff;font-size:12px">linear-gradient</div>
+        </div>
+        <div style="flex:1;background:#0a1120;border-radius:6px;padding:10px;text-align:center">
+          <div style="color:rgba(59,130,246,0.5);font-size:13px">rgba 50% opacity</div>
+        </div>
+      </div>
+    </div>`,
+
+  css_flexbox: () => {
+    const configs = [
+      {label:'justify: flex-start', j:'flex-start', a:'center'},
+      {label:'justify: center', j:'center', a:'center'},
+      {label:'justify: space-between', j:'space-between', a:'center'},
+      {label:'justify: space-around', j:'space-around', a:'center'},
+    ];
+    const [sel, setSel] = [0, ()=>{}]; // static for innerHTML
+    return `<div style="padding:8px" id="flex-demo">
+      <div style="display:flex;gap:4px;flex-wrap:wrap;margin-bottom:10px" id="flex-btns">
+        ${configs.map((c,i)=>`<button onclick="document.getElementById('flex-vis').style.justifyContent='${c.j}';document.getElementById('flex-label').textContent='${c.label}'" style="background:${i===0?'#3b82f6':'#1e2d42'};color:${i===0?'#fff':'#94a3b8'};border:none;border-radius:5px;padding:4px 8px;font-size:10px;cursor:pointer;font-family:sans-serif">${c.label.split(': ')[1]}</button>`).join('')}
+      </div>
+      <div id="flex-label" style="color:#64748b;font-size:11px;margin-bottom:6px">${configs[0].label}</div>
+      <div id="flex-vis" style="display:flex;justify-content:flex-start;align-items:center;gap:8px;background:#0a1120;border-radius:8px;padding:12px;min-height:60px;transition:all .3s">
+        ${[1,2,3].map(i=>`<div style="width:36px;height:36px;background:#3b82f6;border-radius:6px;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:13px;flex-shrink:0">${i}</div>`).join('')}
+      </div>
+    </div>`;
+  },
+
+  css_responsive: () => `
+    <div style="padding:8px">
+      <div style="color:#64748b;font-size:11px;margin-bottom:10px">Simulating different screen sizes:</div>
+      <div style="display:flex;gap:6px;margin-bottom:10px">
+        <button onclick="document.getElementById('resp-demo').style.width='280px'" style="background:#1e2d42;color:#94a3b8;border:none;border-radius:5px;padding:5px 10px;font-size:11px;cursor:pointer;font-family:sans-serif">📱 Mobile</button>
+        <button onclick="document.getElementById('resp-demo').style.width='520px'" style="background:#1e2d42;color:#94a3b8;border:none;border-radius:5px;padding:5px 10px;font-size:11px;cursor:pointer;font-family:sans-serif">📱 Tablet</button>
+        <button onclick="document.getElementById('resp-demo').style.width='100%'" style="background:#1e2d42;color:#94a3b8;border:none;border-radius:5px;padding:5px 10px;font-size:11px;cursor:pointer;font-family:sans-serif">🖥️ Desktop</button>
+      </div>
+      <div id="resp-demo" style="width:280px;transition:width .4s;overflow:hidden;border:1px solid #334155;border-radius:8px;padding:10px">
+        <div id="resp-grid" style="display:flex;flex-direction:column;gap:6px">
+          ${[1,2,3].map(i=>`<div style="background:#1e293b;border-radius:6px;padding:10px;font-size:12px;color:#94a3b8;text-align:center">Card ${i}</div>`).join('')}
+        </div>
+      </div>
+      <div style="font-size:11px;color:#334155;margin-top:8px">↑ Click buttons to see responsive layout change!</div>
+    </div>`,
+
+  js_variables: () => `
+    <div style="padding:8px" id="js-var-demo">
+      <div style="color:#64748b;font-size:11px;margin-bottom:8px">Try different data types in the console:</div>
+      <div style="background:#0a1120;border-radius:8px;padding:12px;font-family:monospace;margin-bottom:10px">
+        <div style="color:#64748b;font-size:11px;margin-bottom:6px">// Try these in browser DevTools (F12 → Console)</div>
+        ${[
+          ['const name = "Alice"', '#86efac', 'string'],
+          ['const age = 25', '#93c5fd', 'number'],
+          ['const active = true', '#fda4af', 'boolean'],
+          ['const scores = [90, 85, 92]', '#fde68a', 'array'],
+          ['const user = { name: "Bob", age: 30 }', '#c4b5fd', 'object'],
+        ].map(([code,color,type])=>`<div style="display:flex;justify-content:space-between;align-items:center;padding:4px 0;border-bottom:1px solid #1e293b">
+          <code style="color:${color};font-size:11px">${code}</code>
+          <span style="color:#334155;font-size:10px">${type}</span>
+        </div>`).join('')}
+      </div>
+      <div style="background:#0a1120;border-radius:8px;padding:12px">
+        <div style="color:#64748b;font-size:11px;margin-bottom:6px">Template literals:</div>
+        <code style="color:#fde68a;font-size:12px">const msg = \`Hello, \${name}! Age: \${age}\`</code>
+        <div style="color:#94a3b8;font-size:12px;margin-top:6px">→ "Hello, Alice! Age: 25"</div>
+      </div>
+    </div>`,
+
+  js_functions: () => `
+    <div style="padding:8px" id="js-fn-demo">
+      <div style="color:#64748b;font-size:11px;margin-bottom:10px">Function playground — try them!</div>
+      <div style="display:flex;gap:8px;margin-bottom:8px">
+        <input id="fn-input" class="d-input" placeholder="Enter your name" style="margin-bottom:0" />
+        <button class="d-btn" style="background:#eab308;white-space:nowrap;flex-shrink:0" onclick="
+          const n=document.getElementById('fn-input').value||'stranger';
+          document.getElementById('fn-result').innerHTML=
+          '<div style=\\'background:#0a1120;border-radius:7px;padding:10px;font-family:monospace;margin-top:8px\\'>'+
+          '<div style=\\'color:#94a3b8;font-size:11px\\'></div>'+
+          '<div style=\\'color:#fde68a;font-size:13px\\'>greet(\"'+n+'\")</div>'+
+          '<div style=\\'color:#86efac;font-size:13px\\'>→ \"Hello, '+n+'!\"</div>'+
+          '<div style=\\'color:#fde68a;font-size:13px;margin-top:4px\\'>double(7) → '+(7*2)+'</div>'+
+          '<div style=\\'color:#fde68a;font-size:13px\\'>add(3, 4) → '+(3+4)+'</div>'+
+          '</div>'
+        ">Run</button>
+      </div>
+      <div id="fn-result"></div>
+    </div>`,
+
+  js_dom: () => `
+    <div style="padding:8px" id="js-dom-demo">
+      <div style="color:#64748b;font-size:11px;margin-bottom:10px">DOM manipulation live demo:</div>
+      <div style="background:#0a1120;border-radius:8px;padding:14px;margin-bottom:10px;transition:all .3s" id="dom-target">
+        <div id="dom-text" style="color:#e2e8f0;font-size:15px;font-weight:600">I am the target element</div>
+        <div id="dom-sub" style="color:#64748b;font-size:12px;margin-top:4px">id="dom-target"</div>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px">
+        <button class="d-btn secondary" onclick="document.getElementById('dom-text').textContent='Text changed! ✅'">Change Text</button>
+        <button class="d-btn secondary" onclick="document.getElementById('dom-target').style.background='#1e3a5f';document.getElementById('dom-target').style.borderLeft='3px solid #3b82f6'">Change Style</button>
+        <button class="d-btn secondary" onclick="document.getElementById('dom-target').classList.toggle('hidden');document.getElementById('dom-sub').textContent=document.getElementById('dom-target').classList.contains('hidden')?'(hidden)':'id=dom-target'">Toggle Hide</button>
+        <button class="d-btn secondary" onclick="document.getElementById('dom-text').textContent='I am the target element';document.getElementById('dom-target').style.background='#0a1120';document.getElementById('dom-target').style.borderLeft='';document.getElementById('dom-sub').textContent='id=dom-target'">Reset</button>
+      </div>
+    </div>`,
+
+  js_events: () => `
+    <div style="padding:8px" id="js-ev-demo">
+      <div style="color:#64748b;font-size:11px;margin-bottom:10px">Events demo — interact!</div>
+      <input id="ev-input" class="d-input" placeholder="Type here to see input event..." oninput="document.getElementById('ev-log').innerHTML='<div style=\\'color:#eab308\\'>input event: \"'+this.value+'\"</div>'+document.getElementById('ev-log').innerHTML.split('<div').slice(0,3).join('<div')" />
+      <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px">
+        <button class="d-btn" onmouseover="document.getElementById('ev-log').innerHTML='<div style=\\'color:#86efac\\'>mouseover event fired!</div>'+document.getElementById('ev-log').innerHTML" onclick="document.getElementById('ev-log').innerHTML='<div style=\\'color:#fde68a\\'>click event fired!</div>'+document.getElementById('ev-log').innerHTML.split('<div').slice(0,3).join('<div')" style="background:#eab308">Hover & Click Me</button>
+        <button class="d-btn secondary" onclick="document.getElementById('ev-log').innerHTML=''">Clear</button>
+      </div>
+      <div id="ev-log" style="background:#0a1120;border-radius:7px;padding:10px;min-height:50px;font-family:monospace;font-size:12px">
+        <div style="color:#334155">← events will appear here</div>
+      </div>
+    </div>`,
+
+  js_arrays: () => `
+    <div style="padding:8px">
+      <div style="color:#64748b;font-size:11px;margin-bottom:8px">Array methods visualized:</div>
+      <div style="background:#0a1120;border-radius:8px;padding:12px;margin-bottom:8px">
+        <div style="color:#eab308;font-size:11px;font-family:monospace;margin-bottom:8px">const nums = [1, 2, 3, 4, 5]</div>
+        ${[
+          ['.map(n => n * 2)', '[2, 4, 6, 8, 10]', '#93c5fd'],
+          ['.filter(n => n % 2 === 0)', '[2, 4]', '#86efac'],
+          ['.find(n => n > 3)', '4', '#fde68a'],
+          ['.reduce((sum,n) => sum+n, 0)', '15', '#fda4af'],
+        ].map(([method,result,color])=>`<div style="display:flex;justify-content:space-between;padding:5px 0;border-bottom:1px solid #1e293b;align-items:center">
+          <code style="color:#94a3b8;font-size:11px">nums${method}</code>
+          <span style="color:${color};font-size:12px;font-family:monospace;font-weight:700">${result}</span>
+        </div>`).join('')}
+      </div>
+      <div style="background:#0a1120;border-radius:8px;padding:10px">
+        <div style="color:#64748b;font-size:11px;margin-bottom:6px">fetch() loads data:</div>
+        <button class="d-btn" style="background:#eab308;font-size:12px" onclick="
+          document.getElementById('fetch-res').textContent='Loading...';
+          fetch('https://jsonplaceholder.typicode.com/todos/1')
+            .then(r=>r.json())
+            .then(d=>{document.getElementById('fetch-res').textContent=JSON.stringify(d,null,2)})
+        ">Fetch a todo item</button>
+        <pre id="fetch-res" style="color:#86efac;font-size:11px;margin-top:8px;font-family:monospace;white-space:pre-wrap">← click to fetch real data</pre>
+      </div>
+    </div>`,
+
+  react_intro: () => `
+    <div style="padding:8px">
+      <div style="color:#64748b;font-size:11px;margin-bottom:10px">JSX expression playground:</div>
+      ${[
+        ['{name}', 'React Learner', '#06b6d4'],
+        ['{2 + 2}', '4', '#22c55e'],
+        ["isLoggedIn ? 'Welcome!' : 'Login'", 'Welcome!', '#f59e0b'],
+        ["score > 90 && '🏆 Excellent!'", '🏆 Excellent!', '#a855f7'],
+      ].map(([code,result,color])=>`<div style="background:#0a1120;border-radius:7px;padding:9px 12px;margin-bottom:6px;display:flex;justify-content:space-between;align-items:center;gap:12px">
+        <code style="color:#7dd3fc;font-size:11px;font-family:monospace">{${code}}</code>
+        <span style="color:${color};font-weight:700;font-size:13px;flex-shrink:0">→ ${result}</span>
+      </div>`).join('')}
+      <div style="background:#0a1120;border-radius:7px;padding:10px;margin-top:4px">
+        <div style="color:#64748b;font-size:11px;margin-bottom:6px">React replaces this HTML with a component:</div>
+        <div style="display:flex;gap:10px;align-items:center">
+          <div style="flex:1;font-family:monospace;font-size:11px;color:#fda4af">&lt;div id="counter"&gt;0&lt;/div&gt;</div>
+          <div style="color:#334155">→</div>
+          <div style="flex:1;font-family:monospace;font-size:11px;color:#86efac">&lt;Counter /&gt;</div>
+        </div>
+      </div>
+    </div>`,
+
+  react_state: () => `
+    <div style="padding:8px" id="react-state-demo">
+      <div style="color:#64748b;font-size:11px;margin-bottom:10px">Simulated useState demo:</div>
+      <div style="background:#0a1120;border-radius:8px;padding:16px;text-align:center;margin-bottom:10px">
+        <div id="rcount" style="font-size:48px;font-weight:800;color:#06b6d4;font-family:monospace;transition:all .2s">0</div>
+        <div style="color:#334155;font-size:11px">count state</div>
+      </div>
+      <div style="display:flex;gap:8px;margin-bottom:10px">
+        <button class="d-btn secondary" style="flex:1" onclick="let c=parseInt(document.getElementById('rcount').textContent)-1;document.getElementById('rcount').textContent=c;document.getElementById('rcount').style.color=c>0?'#06b6d4':c<0?'#ef4444':'#475569'">setCount(count - 1)</button>
+        <button class="d-btn secondary" style="flex:1" onclick="document.getElementById('rcount').textContent=0;document.getElementById('rcount').style.color='#475569'">setCount(0)</button>
+        <button class="d-btn" style="flex:1;background:#06b6d4" onclick="let c=parseInt(document.getElementById('rcount').textContent)+1;document.getElementById('rcount').textContent=c;document.getElementById('rcount').style.color=c>0?'#06b6d4':c<0?'#ef4444':'#475569'">setCount(count + 1)</button>
+      </div>
+      <div style="background:#0a1120;border-radius:7px;padding:8px;font-family:monospace;font-size:11px;color:#64748b;text-align:center">
+        Each button click calls setCount() → React re-renders
+      </div>
+    </div>`,
+
+  react_props: () => `
+    <div style="padding:8px">
+      <div style="color:#64748b;font-size:11px;margin-bottom:8px">Same &lt;Card&gt; component — different props:</div>
+      ${[
+        ['React', '#06b6d4', 'Library', 'UI library for building interfaces'],
+        ['Node.js', '#84cc16', 'Runtime', 'JavaScript on the server'],
+        ['CSS', '#3b82f6', 'Styling', 'Visual styles for web pages'],
+      ].map(([name,color,tag,desc])=>`<div style="background:#0a1120;border-left:3px solid ${color};border-radius:0 8px 8px 0;padding:10px 14px;margin-bottom:8px">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:3px">
+          <span style="color:${color};font-weight:700;font-size:13px">{name} = "${name}"</span>
+          <span style="background:${color}22;color:${color};font-size:10px;padding:1px 8px;border-radius:99px">{tag} = "${tag}"</span>
+        </div>
+        <div style="color:#64748b;font-size:12px">{desc} = "${desc}"</div>
+      </div>`).join('')}
+    </div>`,
+
+  react_effect: () => `
+    <div style="padding:8px" id="react-effect-demo">
+      <div style="background:#0a1120;border-radius:8px;padding:12px;margin-bottom:8px">
+        <div style="color:#64748b;font-size:11px;margin-bottom:8px">useEffect timer (with cleanup):</div>
+        <div id="eff-time" style="font-family:monospace;font-size:36px;font-weight:700;color:#22c55e;margin-bottom:8px">00:00</div>
+        <div style="display:flex;gap:6px">
+          <button class="d-btn" style="background:#22c55e;font-size:12px" id="eff-start" onclick="
+            if(window._effTimer){clearInterval(window._effTimer);window._effTimer=null;this.textContent='▶ Start';this.style.background='#22c55e';return}
+            let s=0;
+            window._effTimer=setInterval(()=>{s++;const m=String(Math.floor(s/60)).padStart(2,'0');const sec=String(s%60).padStart(2,'0');document.getElementById('eff-time').textContent=m+':'+sec},1000);
+            this.textContent='⏹ Stop (clearInterval = cleanup)';this.style.background='#ef4444'
+          ">▶ Start</button>
+          <button class="d-btn secondary" style="font-size:12px" onclick="clearInterval(window._effTimer);window._effTimer=null;document.getElementById('eff-time').textContent='00:00';document.getElementById('eff-start').textContent='▶ Start';document.getElementById('eff-start').style.background='#22c55e'">Reset</button>
+        </div>
+      </div>
+      <div style="background:#0a1120;border-radius:8px;padding:12px">
+        <div style="color:#64748b;font-size:11px;margin-bottom:8px">useEffect data fetch:</div>
+        <button class="d-btn" style="background:#06b6d4;font-size:12px;margin-bottom:8px" onclick="
+          document.getElementById('eff-data').textContent='Fetching...';
+          fetch('https://jsonplaceholder.typicode.com/users/1').then(r=>r.json()).then(d=>{
+            document.getElementById('eff-data').innerHTML='<span style=\\'color:#22c55e\\'>✓ Got user: '+d.name+'<br/>Email: '+d.email+'</span>'
+          })
+        ">Simulate useEffect fetch</button>
+        <div id="eff-data" style="font-size:12px;color:#475569;font-family:monospace">← runs when component mounts</div>
+      </div>
+    </div>`,
+
+  react_fullsite: () => {
+    return `<div style="background:#070c14;border-radius:8px;overflow:hidden;font-size:12px" id="mini-site">
+      <nav style="background:#0d1117;padding:10px 14px;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid #1e2d42">
+        <span style="color:#06b6d4;font-weight:800;font-family:monospace">&lt;Portfolio /&gt;</span>
+        <div style="display:flex;gap:4px">
+          ${['home','projects','contact'].map(p=>`<button onclick="showPage('${p}')" id="nav-${p}" style="background:${p==='home'?'#06b6d4':'transparent'};color:${p==='home'?'#fff':'#64748b'};border:1px solid ${p==='home'?'transparent':'#1e2d42'};border-radius:5px;padding:4px 10px;font-size:10px;cursor:pointer;font-family:sans-serif;text-transform:capitalize">${p}</button>`).join('')}
+        </div>
+      </nav>
+      <div id="mini-content" style="padding:14px;min-height:140px">
+        <div id="page-home">
+          <div style="font-size:16px;font-weight:800;color:#f1f5f9;margin-bottom:6px">Hi, I'm a Dev 👋</div>
+          <div style="color:#64748b;font-size:12px;line-height:1.6;margin-bottom:12px">I build websites with HTML, CSS, JS & React. This demo uses every concept from this course!</div>
+          <button onclick="showPage('projects')" style="background:#06b6d4;color:#fff;border:none;border-radius:6px;padding:7px 16px;font-size:11px;cursor:pointer;font-weight:700;font-family:sans-serif">View Projects →</button>
+        </div>
+        <div id="page-projects" style="display:none">
+          ${[['Weather App','React + Fetch','#38bdf8'],['Todo List','useState','#a78bfa'],['Portfolio','HTML+CSS','#34d399']].map(([n,t,c])=>`<div style="background:#0a1120;border-left:3px solid ${c};border-radius:0 7px 7px 0;padding:8px 12px;margin-bottom:6px;display:flex;justify-content:space-between"><span style="color:#e2e8f0;font-weight:600">${n}</span><span style="color:${c};font-size:10px">${t}</span></div>`).join('')}
+        </div>
+        <div id="page-contact" style="display:none">
+          <input placeholder="Name" style="width:100%;background:#0a1120;border:1px solid #1e2d42;border-radius:6px;padding:7px 10px;color:#e2e8f0;font-size:12px;margin-bottom:6px;outline:none;box-sizing:border-box" />
+          <textarea placeholder="Message..." rows="3" style="width:100%;background:#0a1120;border:1px solid #1e2d42;border-radius:6px;padding:7px 10px;color:#e2e8f0;font-size:12px;resize:none;margin-bottom:8px;outline:none;box-sizing:border-box"></textarea>
+          <button style="width:100%;background:#06b6d4;color:#fff;border:none;border-radius:6px;padding:8px;font-size:11px;cursor:pointer;font-weight:700;font-family:sans-serif">Send Message</button>
+        </div>
+      </div>
+    </div>
+    <script>
+    function showPage(p){
+      ['home','projects','contact'].forEach(x=>{
+        document.getElementById('page-'+x).style.display=x===p?'block':'none';
+        const btn=document.getElementById('nav-'+x);
+        btn.style.background=x===p?'#06b6d4':'transparent';
+        btn.style.color=x===p?'#fff':'#64748b';
+        btn.style.borderColor=x===p?'transparent':'#1e2d42';
+      });
+    }
+    <\/script>`;
+  },
+};
+
+// ═══════════════════════════════════════════════════════════════
+// STATE & RENDERING
+// ═══════════════════════════════════════════════════════════════
+let currentTrack = 'html';
+let currentLesson = 0;
+let currentTab = 'learn';
+const done = {};
+
+function getTrack() { return TRACKS[currentTrack]; }
+function getLesson() { return getTrack().lessons[currentLesson]; }
+function getColor() { return getTrack().color; }
+
+function switchTrack(track) {
+  currentTrack = track;
+  currentLesson = 0;
+  currentTab = 'learn';
+  document.querySelectorAll('.track-tab').forEach(t => {
+    t.classList.toggle('active', t.dataset.track === track);
+  });
+  document.documentElement.style.setProperty('--accent', getColor());
+  renderSidebar();
+  renderLesson();
+}
+
+function switchTab(tab) {
+  currentTab = tab;
+  document.querySelectorAll('.tab-btn').forEach((t,i) => {
+    const tabs = ['learn','demo','practice'];
+    t.classList.toggle('active', tabs[i] === tab);
+  });
+  renderContent();
+}
+
+function navigate(dir) {
+  const lessons = getTrack().lessons;
+  const newIdx = currentLesson + dir;
+  if (newIdx >= 0 && newIdx < lessons.length) {
+    currentLesson = newIdx;
+    currentTab = 'learn';
+    document.querySelectorAll('.tab-btn').forEach((t,i) => t.classList.toggle('active', i===0));
+    renderLesson();
+  }
+}
+
+function renderSidebar() {
+  const lessons = getTrack().lessons;
+  const color = getColor();
+  document.getElementById('sidebar').innerHTML = lessons.map((l, i) => `
+    <button class="lesson-btn ${i === currentLesson ? 'active' : ''}" onclick="jumpTo(${i})">
+      <span class="l-num">${i+1}</span>
+      <span class="l-done">${done[l.id] ? '✅' : l.emoji}</span>
+      <span class="l-title">${l.title}</span>
+    </button>
+  `).join('');
+}
+
+function jumpTo(i) {
+  currentLesson = i;
+  currentTab = 'learn';
+  document.querySelectorAll('.tab-btn').forEach((t,j) => t.classList.toggle('active', j===0));
+  renderLesson();
+}
+
+function renderLesson() {
+  const lesson = getLesson();
+  document.getElementById('lesson-title').innerHTML = `${lesson.emoji} ${lesson.title}`;
+  document.getElementById('lesson-concept').innerHTML = `<b>Key Idea:</b> ${lesson.concept}`;
+  renderSidebar();
+  renderContent();
+  renderSidebox();
+  renderProgress();
+  renderDots();
+  const prev = document.getElementById('btn-prev');
+  const next = document.getElementById('btn-next');
+  prev.disabled = currentLesson === 0;
+  next.textContent = currentLesson === getTrack().lessons.length - 1 ? 'Complete ✓' : 'Next →';
+}
+
+function renderContent() {
+  const lesson = getLesson();
+  const el = document.getElementById('content');
+  el.className = 'fade';
+  void el.offsetWidth;
+  el.className = 'fade fade';
+
+  if (currentTab === 'learn') {
+    el.innerHTML = lesson.learn;
+  } else if (currentTab === 'demo') {
+    const demoFn = DEMOS[lesson.demo];
+    const html = demoFn ? demoFn() : '<p style="color:#64748b;text-align:center;padding:20px">Demo coming soon</p>';
+    el.innerHTML = `<div class="demo-box">
+      <div class="demo-header">
+        <span class="demo-dot" style="background:#ef4444"></span>
+        <span class="demo-dot" style="background:#f59e0b"></span>
+        <span class="demo-dot" style="background:#22c55e"></span>
+        <span style="margin-left:8px">Interactive Demo — try it!</span>
+      </div>
+      <div class="demo-body">${html}</div>
+    </div>`;
+  } else if (currentTab === 'practice') {
+    const p = lesson.practice;
+    el.innerHTML = `<div style="max-width:500px">
+      <div class="section-title">Quick Check</div>
+      <div style="background:#0a1120;border:1px solid #1f2937;border-radius:10px;padding:18px;margin-bottom:16px">
+        <div style="font-size:14px;font-weight:600;color:#e2e8f0;margin-bottom:6px">${p.q}</div>
+        <div style="font-size:12px;color:#475569;margin-bottom:14px">💡 Hint: ${p.hint}</div>
+        <input id="prac-input" class="d-input" placeholder="Type your answer..." onkeydown="if(event.key==='Enter')checkAnswer()" />
+        <div style="display:flex;gap:8px;margin-top:8px">
+          <button class="d-btn" onclick="checkAnswer()">Check Answer</button>
+          <button class="d-btn secondary" onclick="document.getElementById('prac-result').innerHTML='<div style=\\'color:#f59e0b\\'>Answer: ${p.a}</div>'">Show Answer</button>
+        </div>
+        <div id="prac-result" style="margin-top:10px;font-size:13px"></div>
+      </div>
+      <div class="callout info">
+        Practice is how you actually learn. After each lesson, try recreating the demo from scratch in a code editor.
+      </div>
+    </div>`;
+  }
+}
+
+function checkAnswer() {
+  const input = document.getElementById('prac-input');
+  const result = document.getElementById('prac-result');
+  const answer = getLesson().practice.a.toLowerCase();
+  const given = input.value.trim().toLowerCase();
+  if (given === answer || answer.includes(given) && given.length > 2) {
+    result.innerHTML = `<div style="color:#22c55e;font-weight:600">✅ Correct! ${done[getLesson().id] ? '' : 'Lesson marked complete.'}</div>`;
+    done[getLesson().id] = true;
+    renderSidebar();
+    renderProgress();
+  } else {
+    result.innerHTML = `<div style="color:#ef4444">❌ Not quite. Try again or click "Show Answer"</div>`;
+  }
+}
+
+function renderSidebox() {
+  const lesson = getLesson();
+  const tips = lesson.tips || [];
+  const trackColors = {html:'#f97316', css:'#3b82f6', js:'#eab308', react:'#06b6d4'};
+  const trackLabels = {html:'HTML', css:'CSS', js:'JavaScript', react:'React'};
+
+  document.getElementById('sidebox-body').innerHTML = tips.map(tip => {
+    if (tip.track) {
+      const c = tip.color || trackColors[tip.track];
+      const label = trackLabels[tip.track];
+      return `<div class="tip-card">
+        <div class="tip-card-head" style="color:${c}">
+          <span class="tip-tag" style="background:${c}22;color:${c}">${label}</span>
+          ${tip.title}
+        </div>
+        <div class="tip-card-body">${tip.body}</div>
+      </div>`;
+    } else {
+      return `<div class="tip-card">
+        <div class="tip-card-head" style="color:#a855f7">
+          <span class="tip-tag" style="background:#a855f722;color:#a855f7">💡 Tip</span>
+          ${tip.title}
+        </div>
+        <div class="tip-card-body">${tip.body}</div>
+      </div>`;
+    }
+  }).join('') + `
+    <div style="padding:10px 10px 0">
+      <div style="font-size:10px;color:#334155;font-weight:700;text-transform:uppercase;letter-spacing:.06em;margin-bottom:6px">Course Progress</div>
+      ${Object.entries(TRACKS).map(([key, track]) => {
+        const c = track.lessons.filter(l => done[l.id]).length;
+        const t = track.lessons.length;
+        return `<div style="margin-bottom:8px">
+          <div style="display:flex;justify-content:space-between;font-size:10px;margin-bottom:3px">
+            <span style="color:${track.color};font-weight:600">${track.label}</span>
+            <span style="color:#334155">${c}/${t}</span>
+          </div>
+          <div style="background:#1e293b;border-radius:99px;height:3px;overflow:hidden">
+            <div style="height:100%;width:${t>0?(c/t*100):0}%;background:${track.color};border-radius:99px;transition:width .4s"></div>
+          </div>
+        </div>`;
+      }).join('')}
+    </div>`;
+}
+
+function renderProgress() {
+  const all = Object.values(TRACKS).flatMap(t => t.lessons);
+  const completed = all.filter(l => done[l.id]).length;
+  document.getElementById('prog-text').textContent = `${completed} / ${all.length}`;
+  document.getElementById('prog-fill').style.width = `${(completed/all.length)*100}%`;
+}
+
+function renderDots() {
+  const lessons = getTrack().lessons;
+  document.getElementById('pdots').innerHTML = lessons.map((l, i) =>
+    `<div class="pdot ${i === currentLesson ? 'cur' : done[l.id] ? 'done' : ''}" onclick="jumpTo(${i})" title="${l.title}"></div>`
+  ).join('');
+}
+
+// Initialize
+document.documentElement.style.setProperty('--accent', getColor());
+renderSidebar();
+renderLesson();
+</script>
+</body>
+</html>
