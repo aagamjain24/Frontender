@@ -9,7 +9,7 @@
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 :root{
   --bg:#07090f;--surface:#0d1117;--card:#111827;--border:#1f2937;
-  --html:#f97316;--css:#3b82f6;--js:#eab308;--react:#06b6d4;
+  --html:#f97316;--css:#3b82f6;--js:#eab308;--react:#06b6d4;--ml:#10b981;
   --green:#22c55e;--red:#ef4444;--purple:#a855f7;
   --text:#f1f5f9;--muted:#64748b;--dim:#1e293b;
   --mono:'IBM Plex Mono',monospace;--sans:'Outfit',sans-serif;
@@ -225,6 +225,9 @@ input,textarea,select{font-family:var(--sans)}
     </button>
     <button class="track-tab" data-track="react" onclick="switchTrack('react')">
       <span class="dot" style="background:#06b6d4"></span> React
+    </button>
+    <button class="track-tab" data-track="ml" onclick="switchTrack('ml')">
+      <span class="dot" style="background:#10b981"></span> ML
     </button>
     <div id="topbar-right">
       <div class="progress-pill">
@@ -1171,6 +1174,227 @@ list.<span class="cf">push</span>(item);         <span class="cc">// WRONG — m
   }
 };
 
+// ML track added separately to keep TRACKS readable
+TRACKS.ml = {
+  color: '#10b981',
+  label: 'ML',
+  lessons: [
+    {
+      id:'ml1', emoji:'📐', title:'Statistical Learning Theory',
+      concept:'Statistical learning theory provides the <b>mathematical foundations</b> for learning from data.',
+      learn: `<div class="section-title">What is Statistical Learning?</div>
+<p class="theory-text">Statistical Learning Theory (SLT) gives us formal tools to understand <strong>when</strong> and <strong>why</strong> a machine learning model generalises from training data to unseen data.</p>
+<div class="callout info">Key goals: minimise generalisation error, understand the bias-variance trade-off, and guarantee learning is possible.</div>
+<div class="section-title">Core Concepts</div>
+<div class="code-block"><span class="cc"># Empirical Risk Minimisation (ERM)</span>
+<span class="cc"># Choose hypothesis h that minimises training error</span>
+R_emp(h) = (1/n) * Σ L(h(xᵢ), yᵢ)
+
+<span class="cc"># Generalisation bound (VC theory)</span>
+R(h) ≤ R_emp(h) + √(VC_dim / n)
+
+<span class="cc"># Bias-Variance decomposition</span>
+Expected_Error = Bias² + Variance + Noise</div>
+<div class="section-title">Bias vs Variance</div>
+<p class="theory-text"><strong>Bias</strong>: error from wrong assumptions — underfitting.<br><strong>Variance</strong>: error from sensitivity to small fluctuations — overfitting.<br>The goal is to find the sweet spot.</p>
+<div class="callout success">Rule of thumb: simple models → high bias, low variance. Complex models → low bias, high variance.</div>`,
+      demo: 'ml_bias_variance',
+      practice: {q:'What do we call the error from a model being too simple?', a:'bias', hint:'The model makes wrong assumptions'},
+      tips: [
+        {type:'tip', title:'ERM vs SRM', body:'Structural Risk Minimisation adds a complexity penalty to ERM to avoid overfitting automatically.'},
+        {type:'tip', title:'VC Dimension', body:'VC dimension measures the capacity of a hypothesis class — how complex a boundary it can draw.'},
+      ]
+    },
+    {
+      id:'ml2', emoji:'🔢', title:'Feature Extraction — PCA & SVD',
+      concept:'PCA and SVD reduce high-dimensional data to its <b>most informative directions</b>.',
+      learn: `<div class="section-title">Principal Component Analysis (PCA)</div>
+<p class="theory-text">PCA finds the directions (principal components) that capture the most variance in the data. It projects high-dimensional data onto a lower-dimensional subspace.</p>
+<div class="code-block"><span class="cc"># PCA steps (from scratch)</span>
+1. Standardise the data (zero mean, unit variance)
+2. Compute the covariance matrix  C = (XᵀX) / (n-1)
+3. Compute eigenvectors & eigenvalues of C
+4. Sort by eigenvalue (descending)
+5. Project: Z = X · W   (W = top-k eigenvectors)</div>
+<div class="section-title">Singular Value Decomposition (SVD)</div>
+<p class="theory-text">SVD decomposes any matrix A into three matrices:</p>
+<div class="code-block">A = U · Σ · Vᵀ
+
+<span class="cc"># U  — left singular vectors  (m × m)</span>
+<span class="cc"># Σ  — diagonal matrix of singular values</span>
+<span class="cc"># Vᵀ — right singular vectors (n × n)</span>
+
+<span class="cc"># Truncated SVD keeps top-k singular values:</span>
+A ≈ Uₖ · Σₖ · Vₖᵀ   (best rank-k approximation)</div>
+<div class="section-title">PCA via SVD</div>
+<div class="code-block"><span class="cc"># PCA is just a special case of SVD on the centred data matrix</span>
+X_centred = X - mean(X)
+U, s, Vt = svd(X_centred)
+principal_components = Vt   <span class="cc"># rows are components</span>
+scores = X_centred @ Vt.T   <span class="cc"># projected data</span></div>
+<div class="callout success">PCA is used for visualisation, noise reduction, and speeding up downstream ML models.</div>`,
+      demo: 'ml_pca',
+      practice: {q:'In SVD, what does the diagonal matrix Σ contain?', a:'singular values', hint:'They measure the importance of each component'},
+      tips: [
+        {type:'tip', title:'Explained Variance', body:'Choose k such that the top-k components explain ≥ 95% of variance: cumsum(eigenvalues) / sum(eigenvalues).'},
+        {type:'tip', title:'SVD Applications', body:'SVD powers collaborative filtering (Netflix), LSA in NLP, image compression, and pseudoinverse computation.'},
+      ]
+    },
+    {
+      id:'ml3', emoji:'🔍', title:'Feature Selection',
+      concept:'Feature selection finds the <b>most relevant subset</b> of features to improve accuracy and reduce cost.',
+      learn: `<div class="section-title">Why Feature Selection?</div>
+<p class="theory-text">Irrelevant or redundant features hurt generalisation and slow training. Feature selection improves models by removing noise.</p>
+<div class="section-title">Feature Ranking</div>
+<div class="code-block"><span class="cc"># Rank features by a score, pick top-k</span>
+<span class="cc"># Common scores:</span>
+- Mutual Information:  I(X; Y)
+- Pearson Correlation: |corr(xᵢ, y)|
+- ANOVA F-statistic:   var_between / var_within
+- Chi-squared test:    χ²(xᵢ, y)</div>
+<div class="section-title">Three Approaches</div>
+<div class="code-block"><span class="cc"># 1. Filter methods — score features INDEPENDENTLY of model</span>
+selected = [f for f in features if score(f, y) > threshold]
+
+<span class="cc"># 2. Wrapper methods — use model to evaluate feature subsets</span>
+<span class="cc"># Examples: forward selection, backward elimination, RFE</span>
+for subset in all_subsets(features):
+    cv_score = cross_val_score(model, X[subset], y)
+
+<span class="cc"># 3. Embedded methods — selection BUILT INTO training</span>
+<span class="cc"># Examples: Lasso (L1), decision tree feature importance</span>
+lasso = Lasso(alpha=0.1).fit(X, y)
+important = features[lasso.coef_ != 0]</div>
+<div class="callout info"><strong>Filter</strong>: fastest, model-agnostic. <strong>Wrapper</strong>: most accurate, slow. <strong>Embedded</strong>: good trade-off.</div>
+<div class="section-title">Model Evaluation & Selection</div>
+<p class="theory-text">Evaluate models with cross-validation, then select using criteria like AIC/BIC or a held-out validation set.</p>
+<div class="code-block"><span class="cc"># k-Fold Cross-Validation</span>
+from sklearn.model_selection import cross_val_score
+scores = cross_val_score(model, X, y, cv=5, scoring='accuracy')
+print(f"CV Accuracy: {scores.mean():.3f} ± {scores.std():.3f}")</div>`,
+      demo: 'ml_feature_selection',
+      practice: {q:'Which feature selection method evaluates features independently of the learning algorithm?', a:'filter', hint:'It filters features before training'},
+      tips: [
+        {type:'tip', title:'RFE', body:'Recursive Feature Elimination (RFE) trains a model, removes the least important feature, and repeats — it\'s a wrapper method.'},
+        {type:'tip', title:'Lasso for selection', body:'Lasso regression sets irrelevant feature weights to exactly zero, performing automatic feature selection.'},
+      ]
+    },
+    {
+      id:'ml4', emoji:'🤝', title:'Semi-Supervised & Reinforcement Learning',
+      concept:'Semi-supervised learning uses <b>unlabelled data</b>; RL learns from <b>rewards</b> through interaction.',
+      learn: `<div class="section-title">Semi-Supervised Learning</div>
+<p class="theory-text">Semi-supervised learning trains with a <strong>small labelled set</strong> + a <strong>large unlabelled set</strong>. The unlabelled data reveals the data distribution and improves decision boundaries.</p>
+<div class="code-block"><span class="cc"># Common approaches</span>
+- Self-training: label unlabelled samples with current model, retrain
+- Label propagation: spread labels through a similarity graph
+- Generative models: fit P(x, y) using all data, infer labels</div>
+<div class="section-title">Reinforcement Learning (RL)</div>
+<p class="theory-text">An <strong>agent</strong> takes <strong>actions</strong> in an <strong>environment</strong>, receives <strong>rewards</strong>, and learns a <strong>policy</strong> that maximises cumulative reward.</p>
+<div class="code-block"><span class="cc"># Markov Decision Process (MDP) = (S, A, P, R, γ)</span>
+S  — state space
+A  — action space
+P  — transition probabilities P(s'|s,a)
+R  — reward function R(s,a)
+γ  — discount factor (0 ≤ γ < 1)
+
+<span class="cc"># Bellman Expectation Equation (policy evaluation)</span>
+V^π(s) = Σₐ π(a|s) [R(s,a) + γ Σₛ' P(s'|s,a) V^π(s')]</div>
+<div class="section-title">Policy & Value Iteration</div>
+<div class="code-block"><span class="cc"># Policy Iteration</span>
+repeat:
+  1. Policy Evaluation: compute V^π for current π
+  2. Policy Improvement: π'(s) = argmaxₐ [R+γV^π(s')]
+until π doesn't change
+
+<span class="cc"># Value Iteration (combines both steps)</span>
+V(s) ← maxₐ [R(s,a) + γ Σₛ' P(s'|s,a) V(s')]  # repeat until convergence
+π*(s) = argmaxₐ [R(s,a) + γ Σₛ' P(s'|s,a) V*(s')]</div>
+<div class="callout info">Monte Carlo policy evaluation uses sampled episodes to estimate V^π — no model of P required.</div>`,
+      demo: 'ml_rl_mdp',
+      practice: {q:'In an MDP, what does γ (gamma) represent?', a:'discount factor', hint:'It controls how much future rewards are valued'},
+      tips: [
+        {type:'tip', title:'Model-Free vs Model-Based', body:'Policy/Value iteration are model-based (need P). Q-Learning and SARSA are model-free — they learn from experience.'},
+        {type:'tip', title:'Convergence', body:'Value iteration converges to V* for any γ < 1 in finite MDPs.'},
+      ]
+    },
+    {
+      id:'ml5', emoji:'🎮', title:'Q-Learning & SARSA',
+      concept:'Q-Learning and SARSA are <b>temporal-difference</b> methods that learn action-value functions.',
+      learn: `<div class="section-title">Q-Learning (Off-Policy TD)</div>
+<p class="theory-text">Q-Learning learns the optimal action-value function Q*(s,a) by bootstrapping from the best next action, regardless of the policy being followed.</p>
+<div class="code-block"><span class="cc"># Q-Learning update rule</span>
+Q(s,a) ← Q(s,a) + α [r + γ max_a' Q(s',a') - Q(s,a)]
+                        ↑ TD target ↑         ↑ TD error ↑
+
+<span class="cc"># α = learning rate,  γ = discount,  r = immediate reward</span>
+<span class="cc"># max_a' → greedy over next state (off-policy)</span></div>
+<div class="section-title">SARSA (On-Policy TD)</div>
+<p class="theory-text">SARSA (State-Action-Reward-State-Action) updates Q using the <em>actual</em> next action taken by the current policy — it is on-policy.</p>
+<div class="code-block"><span class="cc"># SARSA update rule</span>
+Q(s,a) ← Q(s,a) + α [r + γ Q(s',a') - Q(s,a)]
+                             ↑ actual next action ↑
+
+<span class="cc"># SARSA tuple: (s, a, r, s', a')  ← gives the acronym</span></div>
+<div class="section-title">Q-Learning vs SARSA</div>
+<div class="code-block"><span class="cc"># Q-Learning</span>
+- Off-policy: learns optimal Q* regardless of exploration
+- Can be more efficient but riskier near cliff edges
+
+<span class="cc"># SARSA</span>
+- On-policy: learns Q for the current (ε-greedy) policy
+- Safer in stochastic environments</div>
+<div class="callout success">Deep Q-Network (DQN) replaces the Q table with a neural network, enabling Q-Learning in high-dimensional spaces (e.g., Atari games).</div>`,
+      demo: 'ml_qlearning',
+      practice: {q:'In SARSA, which action is used in the update target?', a:'actual next action', hint:'SARSA follows the current policy for both acting and updating'},
+      tips: [
+        {type:'tip', title:'Exploration', body:'Use ε-greedy: take a random action with probability ε, greedy otherwise. Decay ε over time.'},
+        {type:'tip', title:'Model-Based RL', body:'Model-Based RL learns a model of P(s\'|s,a) and R(s,a), then plans using it — data-efficient but biased if model is wrong.'},
+      ]
+    },
+    {
+      id:'ml6', emoji:'🎬', title:'Recommender Systems & Neural Networks',
+      concept:'Recommender systems predict user preferences; neural networks learn <b>hierarchical representations</b>.',
+      learn: `<div class="section-title">Recommender Systems</div>
+<p class="theory-text">Recommender systems suggest items (movies, products, songs) to users based on past behaviour or item properties.</p>
+<div class="code-block"><span class="cc"># Collaborative Filtering</span>
+<span class="cc"># Finds users/items with similar patterns</span>
+
+<span class="cc">## User-based CF</span>
+sim(u,v) = cosine(ratings_u, ratings_v)
+pred(u,i) = mean_u + Σ_v sim(u,v)·(r_vi - mean_v) / Σ|sim|
+
+<span class="cc">## Matrix Factorisation (model-based CF)</span>
+R ≈ P · Qᵀ   (P: user factors, Q: item factors)
+min ||R - PQᵀ||² + λ(||P||² + ||Q||²)</div>
+<div class="code-block"><span class="cc"># Content-Based Filtering</span>
+<span class="cc"># Recommends items similar to what the user liked</span>
+item_profile = TF-IDF(item_description)
+user_profile = mean(item_profiles_liked_by_user)
+score(item) = cosine(user_profile, item_profile)</div>
+<div class="section-title">Artificial Neural Networks</div>
+<div class="code-block"><span class="cc"># Perceptron (single neuron)</span>
+output = activation(Σ wᵢxᵢ + bias)
+
+<span class="cc"># Multilayer Network — forward pass</span>
+h¹ = activation(W¹x + b¹)   <span class="cc"># hidden layer 1</span>
+h² = activation(W²h¹ + b²)  <span class="cc"># hidden layer 2</span>
+ŷ  = softmax(W³h² + b³)     <span class="cc"># output layer</span>
+
+<span class="cc"># Back-propagation — chain rule</span>
+∂L/∂W¹ = ∂L/∂ŷ · ∂ŷ/∂h² · ∂h²/∂h¹ · ∂h¹/∂W¹</div>
+<div class="section-title">Deep Learning</div>
+<p class="theory-text">Deep Learning uses many layers to learn hierarchical features automatically — CNNs for images, RNNs/Transformers for sequences.</p>
+<div class="callout success">Key insight: each additional layer learns increasingly abstract representations of the input data.</div>`,
+      demo: 'ml_neural_net',
+      practice: {q:'What algorithm is used to train neural networks by propagating error gradients backwards?', a:'backpropagation', hint:'It works backwards through the network layers'},
+      tips: [
+        {type:'tip', title:'CF vs Content-Based', body:'Collaborative filtering needs user history (cold-start problem). Content-based works for new users if item metadata is available.'},
+        {type:'tip', title:'Activation Functions', body:'ReLU (max(0,x)) is the most popular hidden-layer activation. Use sigmoid/softmax only in the output layer for classification.'},
+      ]
+    },
+  ]
+};
+
 // ═══════════════════════════════════════════════════════════════
 // DEMO RENDERERS
 // ═══════════════════════════════════════════════════════════════
@@ -1570,6 +1794,192 @@ const DEMOS = {
   },
 };
 
+// ML demo renderers
+DEMOS.ml_bias_variance = () => {
+  const rows = [
+    ['Linear Regression','High','Low','Underfits — can\'t capture curves'],
+    ['Deep Neural Net','Low','High','Overfits without regularisation'],
+    ['Random Forest','Low','Medium','Ensemble reduces variance'],
+    ['k-NN (k=1)','Low','Very High','Memorises training data'],
+    ['k-NN (k=50)','Medium','Low','Smoother, more generalised'],
+  ];
+  return `<div style="padding:8px">
+    <div style="color:#64748b;font-size:11px;margin-bottom:10px">Bias-Variance profiles of common models:</div>
+    ${rows.map(([m,b,v,note])=>`<div style="background:#0a1120;border-radius:7px;padding:9px 12px;margin-bottom:6px">
+      <div style="display:flex;gap:8px;align-items:center;margin-bottom:4px">
+        <span style="color:#f1f5f9;font-size:12px;font-weight:600;min-width:160px">${m}</span>
+        <span style="background:#1e293b;border-radius:4px;padding:2px 7px;font-size:10px;color:#fb923c">Bias: ${b}</span>
+        <span style="background:#1e293b;border-radius:4px;padding:2px 7px;font-size:10px;color:#38bdf8">Variance: ${v}</span>
+      </div>
+      <div style="color:#64748b;font-size:11px">${note}</div>
+    </div>`).join('')}
+  </div>`;
+};
+
+DEMOS.ml_pca = () => `
+  <div style="padding:8px">
+    <div style="color:#64748b;font-size:11px;margin-bottom:10px">PCA: projecting 2D data onto principal components</div>
+    <svg width="100%" viewBox="0 0 260 180" style="background:#0a1120;border-radius:8px;display:block;margin-bottom:10px">
+      <!-- axes -->
+      <line x1="20" y1="160" x2="240" y2="160" stroke="#1e293b" stroke-width="1"/>
+      <line x1="20" y1="160" x2="20" y2="20" stroke="#1e293b" stroke-width="1"/>
+      <!-- data points -->
+      ${[[60,140],[80,120],[100,110],[120,100],[130,90],[150,80],[160,70],[180,55],[200,45],[110,130],[140,95]]
+        .map(([x,y])=>`<circle cx="${x}" cy="${y}" r="4" fill="#3b82f6" opacity="0.7"/>`).join('')}
+      <!-- PC1 direction -->
+      <line x1="40" y1="155" x2="220" y2="38" stroke="#10b981" stroke-width="2" stroke-dasharray="4,3"/>
+      <text x="222" y="36" fill="#10b981" font-size="10">PC1</text>
+      <!-- PC2 direction -->
+      <line x1="130" y1="165" x2="130" y2="25" stroke="#a855f7" stroke-width="2" stroke-dasharray="4,3" transform="rotate(-35,130,95)"/>
+      <text x="148" y="30" fill="#a855f7" font-size="10">PC2</text>
+    </svg>
+    <div style="display:flex;gap:8px">
+      <div style="flex:1;background:#0a1120;border-radius:7px;padding:9px;font-size:11px">
+        <div style="color:#10b981;font-weight:600;margin-bottom:4px">PC1 (max variance)</div>
+        <div style="color:#64748b">Direction along which data spreads the most.</div>
+      </div>
+      <div style="flex:1;background:#0a1120;border-radius:7px;padding:9px;font-size:11px">
+        <div style="color:#a855f7;font-weight:600;margin-bottom:4px">PC2 (orthogonal)</div>
+        <div style="color:#64748b">Perpendicular to PC1 — captures remaining variance.</div>
+      </div>
+    </div>
+  </div>`;
+
+DEMOS.ml_feature_selection = () => {
+  const features = [
+    {name:'age', mi:0.82, lasso:0.31, keep:true},
+    {name:'income', mi:0.76, lasso:0.18, keep:true},
+    {name:'zip_code', mi:0.21, lasso:0.00, keep:false},
+    {name:'num_clicks', mi:0.68, lasso:0.27, keep:true},
+    {name:'user_agent', mi:0.08, lasso:0.00, keep:false},
+    {name:'session_len', mi:0.55, lasso:0.12, keep:true},
+  ];
+  return `<div style="padding:8px">
+    <div style="color:#64748b;font-size:11px;margin-bottom:10px">Feature scores — filter (MI) vs embedded (Lasso coeff):</div>
+    ${features.map(f=>`<div style="background:#0a1120;border-radius:7px;padding:8px 12px;margin-bottom:5px;display:flex;align-items:center;gap:10px">
+      <span style="color:${f.keep?'#f1f5f9':'#475569'};font-size:12px;width:100px;font-family:monospace">${f.name}</span>
+      <div style="flex:1">
+        <div style="display:flex;align-items:center;gap:6px;margin-bottom:3px">
+          <span style="color:#64748b;font-size:10px;width:28px">MI</span>
+          <div style="flex:1;background:#1e293b;border-radius:3px;height:6px"><div style="width:${f.mi*100}%;height:100%;background:#38bdf8;border-radius:3px"></div></div>
+          <span style="color:#38bdf8;font-size:10px;width:28px">${f.mi}</span>
+        </div>
+        <div style="display:flex;align-items:center;gap:6px">
+          <span style="color:#64748b;font-size:10px;width:28px">L1</span>
+          <div style="flex:1;background:#1e293b;border-radius:3px;height:6px"><div style="width:${f.lasso*100/0.35}%;height:100%;background:#10b981;border-radius:3px"></div></div>
+          <span style="color:#10b981;font-size:10px;width:28px">${f.lasso}</span>
+        </div>
+      </div>
+      <span style="font-size:14px">${f.keep?'✅':'❌'}</span>
+    </div>`).join('')}
+  </div>`;
+};
+
+DEMOS.ml_rl_mdp = () => `
+  <div style="padding:8px" id="rl-demo">
+    <div style="color:#64748b;font-size:11px;margin-bottom:10px">Simple Grid World MDP — run Value Iteration</div>
+    <div id="rl-grid" style="display:grid;grid-template-columns:repeat(4,1fr);gap:4px;margin-bottom:10px"></div>
+    <button class="d-btn" style="width:100%;background:#10b981" onclick="(function(){
+      const R=[[-1,-1,-1,10],[-1,null,-1,-10],[-1,-1,-1,-1]];
+      const gamma=0.9; let V=[[0,0,0,0],[0,0,0,0],[0,0,0,0]];
+      const dirs=[[0,1],[0,-1],[1,0],[-1,0]];
+      for(let iter=0;iter<50;iter++){
+        const nV=V.map(r=>r.slice());
+        for(let r=0;r<3;r++) for(let c=0;c<4;c++){
+          if(R[r][c]===null){nV[r][c]=null;continue;}
+          if(R[r][c]===10||R[r][c]===-10){nV[r][c]=R[r][c];continue;}
+          let best=-Infinity;
+          dirs.forEach(([dr,dc])=>{const nr=r+dr,nc=c+dc;if(nr>=0&&nr<3&&nc>=0&&nc<4&&R[nr][nc]!==null){const v=R[r][c]+gamma*V[nr][nc];if(v>best)best=v;}else{const v=R[r][c]+gamma*V[r][c];if(v>best)best=v;}});
+          nV[r][c]=Math.round(best*10)/10;
+        }
+        V=nV;
+      }
+      const g=document.getElementById('rl-grid');
+      const flat=[...V[0],...V[1],...V[2]];
+      const max=Math.max(...flat.filter(x=>x!==null));
+      g.innerHTML=flat.map((v,i)=>{
+        const row=Math.floor(i/4),col=i%4;
+        if(v===null) return '<div style=\'background:#1e293b;border-radius:6px;padding:14px 4px;text-align:center;font-size:11px;color:#475569\'>WALL</div>';
+        const pct=Math.max(0,(v+10)/20);
+        const bg=R[row][col]===10?'#14532d':R[row][col]===-10?'#450a0a':'#0a1120';
+        return '<div style=\'background:'+bg+';border:1px solid #1e293b;border-radius:6px;padding:10px 4px;text-align:center\'>'+
+          '<div style=\'font-size:13px;font-weight:700;color:'+(v>=0?'#4ade80':'#f87171')+'\'>'+v+'</div>'+
+          '<div style=\'font-size:9px;color:#475569\'>'+(R[row][col]===10?'GOAL':R[row][col]===-10?'TRAP':'V*(s)')+'</div></div>';
+      }).join('');
+    })()">▶ Run Value Iteration</button>
+  </div>`;
+
+DEMOS.ml_qlearning = () => `
+  <div style="padding:8px" id="ql-demo">
+    <div style="color:#64748b;font-size:11px;margin-bottom:10px">Q-Learning vs SARSA — key difference:</div>
+    <div style="background:#0a1120;border-radius:8px;padding:12px;margin-bottom:8px">
+      <div style="color:#f1f5f9;font-size:12px;font-weight:600;margin-bottom:8px">Simulated Q-table (2 states, 2 actions)</div>
+      <div id="qtable" style="font-family:monospace;font-size:11px"></div>
+    </div>
+    <div style="display:flex;gap:8px">
+      <button class="d-btn" style="flex:1;background:#10b981" onclick="(function(){
+        if(!window._Q) window._Q=[[0,0],[0,0]];
+        const s=Math.floor(Math.random()*2), a=Math.random()>0.3?window._Q[s].indexOf(Math.max(...window._Q[s])):Math.floor(Math.random()*2);
+        const r=a===0?1:-1; const sp=1-s;
+        window._Q[s][a]+=0.3*(r+0.9*Math.max(...window._Q[sp])-window._Q[s][a]);
+        window._Q[s][a]=Math.round(window._Q[s][a]*100)/100;
+        const el=document.getElementById('qtable');
+        el.innerHTML='<div style=\'color:#38bdf8;margin-bottom:4px\'>Q-Learning update (greedy next)</div>'+
+          window._Q.map((row,i)=>'State '+i+': [a0='+row[0]+', a1='+row[1]+']').join('<br>');
+      })()">Step Q-Learning</button>
+      <button class="d-btn secondary" style="flex:1" onclick="window._Q=[[0,0],[0,0]];document.getElementById('qtable').innerHTML='<span style=\'color:#475569\'>Reset done</span>'">Reset</button>
+    </div>
+    <div style="margin-top:10px;background:#0a1120;border-radius:7px;padding:9px;font-size:11px;color:#64748b">
+      <strong style="color:#f1f5f9">Q-Learning</strong>: uses max over next actions (off-policy)<br>
+      <strong style="color:#f1f5f9">SARSA</strong>: uses actual next action from policy (on-policy)
+    </div>
+  </div>`;
+
+DEMOS.ml_neural_net = () => {
+  const layers = [
+    {label:'Input', nodes:3, color:'#3b82f6'},
+    {label:'Hidden 1', nodes:4, color:'#10b981'},
+    {label:'Hidden 2', nodes:4, color:'#10b981'},
+    {label:'Output', nodes:2, color:'#a855f7'},
+  ];
+  const maxNodes = 4;
+  const lw = 54, gap = 52, svgW = layers.length*lw + (layers.length-1)*gap + 20;
+  const svgH = 180;
+  const nodeR = 12;
+  const positions = layers.map((l,li)=>{
+    const x = 10 + li*(lw+gap) + lw/2;
+    const startY = (svgH - (l.nodes-1)*36) / 2;
+    return Array.from({length:l.nodes},(_,ni)=>({x, y:startY+ni*36}));
+  });
+  let lines = '';
+  for(let li=0;li<positions.length-1;li++){
+    positions[li].forEach(({x:x1,y:y1})=>{
+      positions[li+1].forEach(({x:x2,y:y2})=>{
+        lines += `<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="#1e293b" stroke-width="1.5"/>`;
+      });
+    });
+  }
+  let circles = '';
+  layers.forEach((l,li)=>{
+    positions[li].forEach(({x,y})=>{
+      circles += `<circle cx="${x}" cy="${y}" r="${nodeR}" fill="${l.color}" opacity="0.85"/>`;
+    });
+    const lx = positions[li][0].x;
+    const ly = svgH - 12;
+    circles += `<text x="${lx}" y="${ly}" fill="#64748b" font-size="9" text-anchor="middle">${l.label}</text>`;
+  });
+  return `<div style="padding:8px">
+    <div style="color:#64748b;font-size:11px;margin-bottom:8px">Multilayer Neural Network architecture:</div>
+    <svg width="100%" viewBox="0 0 ${svgW} ${svgH}" style="background:#0a1120;border-radius:8px;display:block;margin-bottom:10px">${lines}${circles}</svg>
+    <div style="display:flex;gap:6px;flex-wrap:wrap">
+      ${layers.map(l=>`<div style="background:#0a1120;border-radius:6px;padding:6px 10px;font-size:10px;border-left:3px solid ${l.color}">
+        <span style="color:${l.color};font-weight:600">${l.label}</span>
+        <span style="color:#64748b"> ${l.nodes} neurons</span>
+      </div>`).join('')}
+    </div>
+  </div>`;
+};
+
 // ═══════════════════════════════════════════════════════════════
 // STATE & RENDERING
 // ═══════════════════════════════════════════════════════════════
@@ -1708,8 +2118,8 @@ function checkAnswer() {
 function renderSidebox() {
   const lesson = getLesson();
   const tips = lesson.tips || [];
-  const trackColors = {html:'#f97316', css:'#3b82f6', js:'#eab308', react:'#06b6d4'};
-  const trackLabels = {html:'HTML', css:'CSS', js:'JavaScript', react:'React'};
+  const trackColors = {html:'#f97316', css:'#3b82f6', js:'#eab308', react:'#06b6d4', ml:'#10b981'};
+  const trackLabels = {html:'HTML', css:'CSS', js:'JavaScript', react:'React', ml:'ML'};
 
   document.getElementById('sidebox-body').innerHTML = tips.map(tip => {
     if (tip.track) {
